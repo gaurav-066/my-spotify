@@ -174,7 +174,14 @@ nav{display:flex;flex-direction:column;gap:2px}
 
 /* ── ART AREA ── */
 .np-art-wrap{position:relative;margin:16px 18px 0;border-radius:16px;overflow:hidden;background:#000;box-shadow:0 18px 50px rgba(0,0,0,.6);aspect-ratio:16/9;transition:border-radius .35s ease,margin .35s ease}
-#yt-player-frame{position:absolute;inset:0;width:100%;height:100%;border:none;background:#000;display:block;z-index:1}
+
+/* THIS SHIELD BLOCKS YOUTUBE CLICKS BY DEFAULT */
+#yt-player-frame{
+  position:absolute; inset:0; width:100%; height:100%; border:none; 
+  background:#000; display:block; z-index:1;
+  pointer-events: none; 
+}
+
 #np-art-cover{position:absolute;inset:0;z-index:2;width:100%;height:100%;object-fit:cover;transition:opacity .35s ease;opacity:1;pointer-events:none}
 .np-art-wrap.video-mode #np-art-cover{opacity:0}
 
@@ -190,34 +197,6 @@ nav{display:flex;flex-direction:column;gap:2px}
 .art-pill svg{width:13px;height:13px;fill:currentColor;flex-shrink:0}
 .art-pill.on{background:rgba(30,215,96,.18);border-color:rgba(30,215,96,.5);color:var(--green)}
 #vid-toggle-btn{right:10px}
-#quality-btn{left:10px}
-
-/* ── QUALITY DROPDOWN ── */
-.quality-menu{
-  position:absolute;bottom:calc(100% + 8px);left:0;
-  background:rgba(16,16,16,.97);border:1px solid rgba(255,255,255,.12);
-  border-radius:14px;overflow:hidden;min-width:152px;
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  box-shadow:0 12px 40px rgba(0,0,0,.7);
-  display:none;flex-direction:column;z-index:30;
-  padding:4px 0;
-}
-.quality-menu.open{display:flex}
-.qmenu-title{font-size:.6rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);padding:8px 14px 4px}
-.qitem{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:8px 14px;font-size:.8rem;font-weight:600;cursor:pointer;
-  color:var(--text-dim);transition:background .1s,color .1s;gap:18px;white-space:nowrap;
-}
-.qitem:hover{background:rgba(255,255,255,.07);color:#fff}
-.qitem.selected{color:var(--green)}
-.qitem-left{display:flex;align-items:center;gap:8px}
-.qitem-check{font-size:11px;opacity:0;flex-shrink:0}
-.qitem.selected .qitem-check{opacity:1}
-.qitem-badge{font-size:.58rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;background:rgba(30,215,96,.15);color:var(--green);border-radius:4px;padding:2px 5px;line-height:1.4}
-.q-divider{height:1px;background:rgba(255,255,255,.06);margin:3px 0}
-/* Loading state for quality menu */
-.qmenu-loading{font-size:.75rem;color:var(--text-muted);padding:10px 14px;text-align:center}
 
 /* Bottom section */
 .np-bottom{transition:background .35s ease,padding .35s ease}
@@ -276,7 +255,6 @@ nav{display:flex;flex-direction:column;gap:2px}
   .np-overlay.fullscreen .np-panel{border-radius:0}
   .trow{grid-template-columns:0 46px 1fr auto;gap:10px;padding:7px 4px}.tnum{display:none}
   .tthumb{width:46px;height:46px}
-  .quality-menu{left:0}
 }
 </style>
 </head>
@@ -354,7 +332,6 @@ nav{display:flex;flex-direction:column;gap:2px}
     </button>
   </nav>
 
-  <!-- BOTTOM PLAYER BAR -->
   <div class="player" id="player-bar">
     <div class="p-left">
       <img id="p-thumb" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E" alt=""/>
@@ -388,10 +365,7 @@ nav{display:flex;flex-direction:column;gap:2px}
     </div>
   </div>
 
-</div><!-- /.app -->
-
-<!-- NOW PLAYING PANEL -->
-<div class="np-overlay" id="np-overlay">
+</div><div class="np-overlay" id="np-overlay">
   <div class="np-backdrop" id="np-backdrop"></div>
   <div class="np-panel">
 
@@ -411,20 +385,13 @@ nav{display:flex;flex-direction:column;gap:2px}
       <div id="yt-player-frame"></div>
       <img id="np-art-cover" src="" alt=""/>
 
-      <!-- Video toggle — bottom right -->
       <button class="art-pill" id="vid-toggle-btn">
         <svg id="vid-icon-video" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
         <svg id="vid-icon-audio" viewBox="0 0 24 24" style="display:none"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
         <span id="vid-label">Watch video</span>
       </button>
 
-      <!-- Quality button — bottom left -->
-      <button class="art-pill" id="quality-btn">
-        <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96a7.02 7.02 0 0 0-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.37 1.04.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.57 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
-        <span id="quality-label">Auto</span>
-        <div class="quality-menu" id="quality-menu"></div>
-      </button>
-    </div>
+      </div>
 
     <div class="np-bottom">
       <div class="np-info">
@@ -461,29 +428,6 @@ const HOME_SECTIONS = [
   { id:'party',    title:'🎉 Party Bangers',          query:'bollywood dance party songs' },
   { id:'classics', title:'⭐ 90s Nostalgia',          query:'90s bollywood classic songs' },
 ];
-
-/* ── Quality label map ── */
-const QUALITY_MAP = {
-  highres: '4K',
-  hd1440:  '1440p',
-  hd1080:  '1080p',
-  hd720:   '720p',
-  large:   '480p',
-  medium:  '360p',
-  small:   '240p',
-  tiny:    '144p',
-  default: 'Auto',
-};
-const QUALITY_BADGE = {
-  highres: '2160p',
-  hd1440:  '2K',
-  hd1080:  'HD',
-  hd720:   'HD',
-};
-
-let currentQuality = 'default';
-let qualityMenuOpen = false;
-let qualityPollTimer = null; // polls actual playing quality
 
 /* ── DOM refs ── */
 const resultsEl    = document.getElementById('results');
@@ -525,9 +469,6 @@ const vidToggleBtn = document.getElementById('vid-toggle-btn');
 const vidLabel     = document.getElementById('vid-label');
 const vidIconVideo = document.getElementById('vid-icon-video');
 const vidIconAudio = document.getElementById('vid-icon-audio');
-const qualityBtn   = document.getElementById('quality-btn');
-const qualityMenu  = document.getElementById('quality-menu');
-const qualityLabel = document.getElementById('quality-label');
 
 /* ── State ── */
 let tracks = [], currentIdx = -1, isPlaying = false;
@@ -538,118 +479,13 @@ let currentItem = null;
 let videoMode = false, panelOpen = false;
 let currentVolume = 70;
 
-/* ── Build quality dropdown from real available levels ── */
-function rebuildQualityMenu(levels){
-  qualityMenu.innerHTML = '';
-
-  const title = document.createElement('div');
-  title.className = 'qmenu-title';
-  title.textContent = 'Video Quality';
-  qualityMenu.appendChild(title);
-
-  if(!levels || levels.length === 0){
-    const msg = document.createElement('div');
-    msg.className = 'qmenu-loading';
-    msg.textContent = 'Loading…';
-    qualityMenu.appendChild(msg);
-    return;
-  }
-
-  // Always put Auto first, then rest
-  const ordered = ['default', ...levels.filter(l => l !== 'default')];
-
-  ordered.forEach((key, i) => {
-    // Divider after Auto
-    if(i === 1){
-      const d = document.createElement('div');
-      d.className = 'q-divider';
-      qualityMenu.appendChild(d);
-    }
-    const label = QUALITY_MAP[key] || key;
-    const badge = QUALITY_BADGE[key] || '';
-    const item = document.createElement('div');
-    item.className = 'qitem' + (key === currentQuality ? ' selected' : '');
-    item.dataset.key = key;
-    item.innerHTML = `
-      <div class="qitem-left">
-        <span>${label}</span>
-        ${badge ? `<span class="qitem-badge">${badge}</span>` : ''}
-      </div>
-      <span class="qitem-check">✓</span>`;
-    item.addEventListener('click', e => {
-      e.stopPropagation();
-      applyQuality(key);
-      closeQualityMenu();
-    });
-    qualityMenu.appendChild(item);
-  });
-}
-
-/* ── Show loading state while video loads ── */
-function resetQualityMenu(){
-  qualityMenu.innerHTML = '';
-  const title = document.createElement('div');
-  title.className = 'qmenu-title';
-  title.textContent = 'Video Quality';
-  qualityMenu.appendChild(title);
-  const msg = document.createElement('div');
-  msg.className = 'qmenu-loading';
-  msg.textContent = 'Loading…';
-  qualityMenu.appendChild(msg);
-  qualityLabel.textContent = 'Auto';
-  qualityBtn.classList.remove('on');
-}
-
-function applyQuality(key){
-  currentQuality = key;
-  // Update selected state in menu
-  qualityMenu.querySelectorAll('.qitem').forEach(el => {
-    el.classList.toggle('selected', el.dataset.key === key);
-  });
-  // Send request to YouTube player
-  if(ytPlayer?.setPlaybackQuality) ytPlayer.setPlaybackQuality(key);
-  // Highlight button if non-auto
-  qualityBtn.classList.toggle('on', key !== 'default');
-}
-
-/* ── Quality polling — reads ACTUAL playing quality every 1s ── */
-function startQualityPoll(){
-  stopQualityPoll();
-  qualityPollTimer = setInterval(() => {
-    if(!ytPlayer?.getPlaybackQuality) return;
-    try {
-      const actual = ytPlayer.getPlaybackQuality();
-      if(actual && actual !== 'unknown'){
-        qualityLabel.textContent = QUALITY_MAP[actual] || actual;
-      }
-    } catch(_){}
-  }, 1000);
-}
-function stopQualityPoll(){
-  if(qualityPollTimer){ clearInterval(qualityPollTimer); qualityPollTimer = null; }
-}
-
-function openQualityMenu(){
-  qualityMenuOpen = true;
-  qualityMenu.classList.add('open');
-}
-function closeQualityMenu(){
-  qualityMenuOpen = false;
-  qualityMenu.classList.remove('open');
-}
-
-qualityBtn.addEventListener('click', e => {
-  e.stopPropagation();
-  qualityMenuOpen ? closeQualityMenu() : openQualityMenu();
-});
-document.addEventListener('click', () => { if(qualityMenuOpen) closeQualityMenu(); });
-
 /* ── YT IFrame API ── */
 window.onYouTubeIframeAPIReady = () => {
   ytReady = true;
   ytPlayer = new YT.Player('yt-player-frame', {
     width: '100%', height: '100%',
-    playerVars: { autoplay:0, playsinline:1, controls:0, rel:0, modestbranding:1 },
+    // 👇 CONTROLS ENABLED HERE
+    playerVars: { autoplay:0, playsinline:1, controls:1, rel:0, modestbranding:1 },
     events: {
       onReady(e){
         e.target.setVolume(currentVolume);
@@ -659,31 +495,10 @@ window.onYouTubeIframeAPIReady = () => {
         if(e.data === S.PLAYING){
           isPlaying = true; showPauseAll();
           try{ duration = ytPlayer.getDuration(); updateTotLabel(); }catch(_){}
-
-          // ── REAL: get available quality levels and rebuild menu ──
-          try{
-            const levels = ytPlayer.getAvailableQualityLevels();
-            if(levels && levels.length) rebuildQualityMenu(levels);
-          }catch(_){}
-
-          // Re-apply chosen quality after YouTube starts playing
-          if(currentQuality !== 'default'){
-            try{ ytPlayer.setPlaybackQuality(currentQuality); }catch(_){}
-          }
-
-          // Start polling actual quality to keep label honest
-          startQualityPoll();
           startLoop();
         }
         if(e.data === S.PAUSED) { isPlaying = false; showPlayAll(); stopLoop(); }
         if(e.data === S.ENDED)  { playNext(); }
-        if(e.data === S.BUFFERING){
-          // Update label during buffering too
-          try{
-            const levels = ytPlayer.getAvailableQualityLevels();
-            if(levels && levels.length) rebuildQualityMenu(levels);
-          }catch(_){}
-        }
       }
     }
   });
@@ -841,17 +656,13 @@ function playItem(item){
   tTot.textContent='0:00'; npTTot.textContent='0:00';
   duration = 0;
 
-  // Reset quality UI for new video
-  resetQualityMenu();
-  stopQualityPoll();
-
   if(ytPlayer && ytReady){
-    ytPlayer.loadVideoById({ videoId: item.videoId, suggestedQuality: currentQuality });
+    ytPlayer.loadVideoById({ videoId: item.videoId });
   } else {
     const t = setInterval(()=>{
       if(ytReady && ytPlayer){
         clearInterval(t);
-        ytPlayer.loadVideoById({ videoId: item.videoId, suggestedQuality: currentQuality });
+        ytPlayer.loadVideoById({ videoId: item.videoId });
       }
     }, 100);
   }
@@ -877,16 +688,34 @@ function playPrev(){
 /* ── Video / audio mode ── */
 function setVideoMode(on){
   videoMode = on;
+  const ytFrame = document.getElementById('yt-player-frame');
+  const customControls = document.querySelector('.np-bottom');
+  const customFsBtn = document.getElementById('np-fs-btn');
+
   if(on){
+    // 📺 VIDEO MODE: Hand control over to YouTube
     npArtWrap.classList.add('video-mode');
     vidLabel.textContent='Audio only';
     vidIconVideo.style.display='none'; vidIconAudio.style.display='';
     vidToggleBtn.classList.add('on');
+    
+    // Remove the invisible shield so the user can click the YouTube gear, play button, and fullscreen
+    ytFrame.style.pointerEvents = 'auto'; 
+    // Hide your custom play/pause bar and fullscreen button so they don't clash
+    customControls.style.display = 'none'; 
+    customFsBtn.style.display = 'none'; 
   } else {
+    // 🎵 AUDIO MODE: Take control back to your custom UI
     npArtWrap.classList.remove('video-mode');
     vidLabel.textContent='Watch video';
     vidIconVideo.style.display=''; vidIconAudio.style.display='none';
     vidToggleBtn.classList.remove('on');
+    
+    // Put the invisible shield back up
+    ytFrame.style.pointerEvents = 'none';
+    // Bring back your custom play/pause bar and fullscreen button
+    customControls.style.display = 'block'; 
+    customFsBtn.style.display = 'flex'; 
   }
 }
 
@@ -955,7 +784,6 @@ npBackdrop.addEventListener('click', closeNowPlaying);
 npCloseBtn.addEventListener('click',()=>{ if(isFullscreen) toggleFullscreen(); else closeNowPlaying(); });
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){
-    if(qualityMenuOpen){ closeQualityMenu(); return; }
     if(isFullscreen){ isFullscreen=false; npOverlay.classList.remove('fullscreen'); }
     else if(panelOpen) closeNowPlaying();
   }
