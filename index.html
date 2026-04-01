@@ -861,6 +861,7 @@ function playFromRow(item,rowEl,idx){
 async function playItem(item) {
   // 1. INSTANT UI UPDATE
   currentItem = item;
+  updateMediaSession(item);
   const {title, artist} = parseTitleArtist(item.title || '');
 
   pThumb.src = item.thumbnail || '';
@@ -1131,6 +1132,21 @@ setupDailyRefresh();
   
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('/sw.js').catch(()=>{});
+}
+
+// ── MEDIA SESSION (Background Audio) ──
+function updateMediaSession(item) {
+  if (!('mediaSession' in navigator)) return;
+  const { title, artist } = parseTitleArtist(item.title || '');
+  navigator.mediaSession.metadata = new MediaMetadata({
+    title: title || item.title,
+    artist: artist || 'Raaga',
+    artwork: [{ src: item.thumbnail, sizes: '512x512', type: 'image/jpeg' }]
+  });
+  navigator.mediaSession.setActionHandler('play', () => ytPlayer?.playVideo());
+  navigator.mediaSession.setActionHandler('pause', () => ytPlayer?.pauseVideo());
+  navigator.mediaSession.setActionHandler('nexttrack', () => playNext());
+  navigator.mediaSession.setActionHandler('previoustrack', () => playPrev());
 }
   
 </script>
