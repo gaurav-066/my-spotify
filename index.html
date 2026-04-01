@@ -191,9 +191,6 @@ nav{display:flex;flex-direction:column;gap:4px}
 .np-cbtn.pp{width:72px;height:72px;background:var(--text);border-radius:50%;color:#000;box-shadow:0 10px 30px rgba(255,255,255,0.2)}
 .np-cbtn.pp:hover{background:#e0e0e0;transform:scale(1.05)}.np-cbtn.pp svg{width:34px;height:34px;fill:#000;margin-left:4px}
 
-@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-
 @media(max-width:900px){
   :root{--nav-w:72px}
   .sidebar{padding:24px 8px;align-items:center}
@@ -385,14 +382,18 @@ window.onYouTubeIframeAPIReady = () => {
 };
 
 /* ── UI HELPERS ── */
-function fmt(s){ s=Math.floor(s||0); return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`; }
+function fmt(s){ 
+    if (isNaN(s) || s === Infinity) return "0:00";
+    s=Math.floor(s||0); 
+    return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`; 
+}
 function showPlayAll(){ document.getElementById('play-icon').style.display=''; document.getElementById('pause-icon').style.display='none'; document.getElementById('np-play-icon').style.display=''; document.getElementById('np-pause-icon').style.display='none'; const m=document.getElementById('mob-pp-btn'); if(m) m.innerHTML='<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>'; }
 function showPauseAll(){ document.getElementById('play-icon').style.display='none'; document.getElementById('pause-icon').style.display=''; document.getElementById('np-play-icon').style.display='none'; document.getElementById('np-pause-icon').style.display=''; const m=document.getElementById('mob-pp-btn'); if(m) m.innerHTML='<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>'; }
 function setNav(v){ ['home','search'].forEach(n=>{ document.getElementById('nav-'+n)?.classList.toggle('active',v===n); document.getElementById('mob-'+n)?.classList.toggle('active',v===n); }); }
 function showHome(){ document.getElementById('view-home').style.display=''; document.getElementById('view-search').style.display='none'; setNav('home'); document.getElementById('main').scrollTo({top:0,behavior:'smooth'}); }
 function showSearch(){ document.getElementById('view-home').style.display='none'; document.getElementById('view-search').style.display=''; setNav('search'); setTimeout(()=>document.getElementById('search-input').focus(),80); }
 
-/* ── PROGRESS LOOP (FIXED FOR 0:00 BUG) ── */
+/* ── PROGRESS LOOP (FIXED BUG) ── */
 function startLoop(){ 
   stopLoop(); 
   progTimer = setInterval(() => { 
@@ -404,11 +405,11 @@ function startLoop(){
         dur = ytPlayer.getDuration();
     } else {
         curr = bgAudio.currentTime;
-        // FIX: If piped stream duration is Infinity, use the duration we got from JSON
+        // Infinity fix: Use duration passed from backend if browser fails to get it
         dur = (bgAudio.duration && bgAudio.duration !== Infinity && !isNaN(bgAudio.duration)) ? bgAudio.duration : knownDuration;
     }
     
-    if (!dur) return; // Prevent 0/0 breaking the UI
+    if (!dur || dur === Infinity) return; // Safety catch
     duration = dur; 
     
     const pct = (curr/dur)*100; 
@@ -427,7 +428,7 @@ bgAudio.addEventListener('pause', ()=>{ if(!videoMode){isPlaying=false; showPlay
 bgAudio.addEventListener('ended', ()=>{ if(!videoMode) playNext(); });
 
 function handleProgClick(e, bar, fill) {
-  if(!duration) return;
+  if(!duration || duration === Infinity) return;
   const r = bar.getBoundingClientRect();
   const pct = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
   fill.style.width = (pct * 100) + '%'; 
@@ -438,8 +439,7 @@ function handleProgClick(e, bar, fill) {
 document.getElementById('prog-bar').addEventListener('click', e => handleProgClick(e, document.getElementById('prog-bar'), document.getElementById('prog-fill')));
 document.getElementById('np-prog-bar').addEventListener('click', e => handleProgClick(e, document.getElementById('np-prog-bar'), document.getElementById('np-prog-fill')));
 
-/* ── CORE PLAYBACK LOGIC (FIXED TIME SYNC) ── */
-// Added startAt parameter so it remembers the time when switching back from video
+/* ── CORE PLAYBACK LOGIC (WITH PRECISE TIME SYNC) ── */
 async function playItem(item, startAt = 0){
   currentItem = item; 
   const {title,artist} = parseTitleArtist(item.title||'');
@@ -471,14 +471,20 @@ async function playItem(item, startAt = 0){
           if (data.url) {
               bgAudio.src = data.url;
               bgAudio.volume = currentVolume/100;
-              
-              // FIX: Save backend duration for the progress bar
               if (data.duration) knownDuration = data.duration;
               
-              // FIX: Apply the saved time instantly before playing
-              if (startAt > 0) bgAudio.currentTime = startAt;
+              bgAudio.load(); // Force browser to acknowledge the new source
               
-              await bgAudio.play();
+              // Safe seeking: Wait for metadata before fast-forwarding
+              if (startAt > 0) {
+                  bgAudio.addEventListener('loadedmetadata', function onMeta() {
+                      bgAudio.currentTime = startAt;
+                      bgAudio.removeEventListener('loadedmetadata', onMeta);
+                  }, { once: true });
+              }
+              
+              bgAudio.play().catch(e => console.warn("Autoplay strict block", e));
+              
               if (document.getElementById('stream-spinner')) document.getElementById('stream-spinner').style.display='none';
               startLoop();
           } else { throw new Error("No URL returned"); }
@@ -494,11 +500,10 @@ function _loadYouTube(videoId, startSeconds = 0){
   ytPlayer.loadVideoById({ videoId: videoId, startSeconds: startSeconds });
 }
 
-/* ── SYNCED MODE SWITCHING (FIXED) ── */
+/* ── SYNCED MODE SWITCHING ── */
 function setVideoMode(on){
   if (videoMode === on || !currentItem) return;
   
-  // Capture precise time
   let currentTime = videoMode ? (ytPlayer.getCurrentTime() || 0) : (bgAudio.currentTime || 0);
   
   if (videoMode) ytPlayer.pauseVideo(); 
@@ -524,7 +529,6 @@ function setVideoMode(on){
     document.getElementById('vid-icon-video').style.display='block';
     document.getElementById('vid-icon-audio').style.display='none';
     
-    // FIX: Pass the exact time back into the audio fetcher!
     playItem(currentItem, currentTime); 
   }
 }
@@ -613,6 +617,10 @@ let isFullscreen = false;
 document.getElementById('np-fs-btn').onclick = e => {
   e.stopPropagation(); isFullscreen = !isFullscreen;
   document.getElementById('np-overlay').classList.toggle('fullscreen', isFullscreen);
+  try {
+      if(isFullscreen) { const p = document.getElementById('np-overlay').requestFullscreen?.() ?? document.getElementById('np-overlay').webkitRequestFullscreen?.(); if(p?.catch) p.catch(()=>{}); }
+      else { const p = document.fullscreenElement ? document.exitFullscreen?.() : null; if(p?.catch) p.catch(()=>{}); }
+  } catch(e){}
 };
 
 initHome();
