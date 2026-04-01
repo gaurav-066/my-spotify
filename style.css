@@ -782,6 +782,7 @@ nav {
   background: transparent;
   display: flex;
   flex-direction: column;
+  justify-content: center; /* Center children vertically when controls are hidden */
   transform: translateY(100vh);
   transition: transform 0.6s cubic-bezier(0.32, 0.72, 0, 1);
   height: 90vh;
@@ -866,6 +867,7 @@ nav {
   width: 100%;
   height: auto;
   border-radius: 0; /* Videos in Apple ecosystem usually hit edges or have slight rounding */
+  flex-shrink: 0; /* Don't collapse if container shrinks */
 }
 
 .np-art-wrap.video-mode #np-art-cover {

@@ -384,23 +384,35 @@ els.vidToggleBtn.addEventListener('click', e=>{ e.stopPropagation(); setVideoMod
 const npFsBtn = document.getElementById('np-fs-btn');
 let isFullscreen = false;
 
-function toggleFullscreen(){
+async function toggleFullscreen(){
   isFullscreen = !isFullscreen;
   els.npOverlay.classList.toggle('fullscreen', isFullscreen);
   try{
     if(isFullscreen){
       const p = els.npOverlay.requestFullscreen?.() ?? els.npOverlay.webkitRequestFullscreen?.();
-      if(p?.catch) p.catch(()=>{});
+      if(p?.then){
+        await p.then(()=>{
+          if(videoMode && screen.orientation && screen.orientation.lock){
+            screen.orientation.lock('landscape').catch(()=>{});
+          }
+        }).catch(()=>{});
+      }
     } else {
-      const p = document.fullscreenElement ? document.exitFullscreen?.() : null;
-      if(p?.catch) p.catch(()=>{});
+      if(document.fullscreenElement) await document.exitFullscreen?.();
+      if(screen.orientation && screen.orientation.unlock){
+        screen.orientation.unlock();
+      }
     }
   } catch(e){}
 }
 
 if(npFsBtn) npFsBtn.addEventListener('click', e=>{ e.stopPropagation(); toggleFullscreen(); });
 document.addEventListener('fullscreenchange', ()=>{
-  if(!document.fullscreenElement && isFullscreen){ isFullscreen=false; els.npOverlay.classList.remove('fullscreen'); }
+  if(!document.fullscreenElement && isFullscreen){
+    isFullscreen=false;
+    els.npOverlay.classList.remove('fullscreen');
+    if(screen.orientation && screen.orientation.unlock) screen.orientation.unlock();
+  }
 });
 
 els.npBackdrop.addEventListener('click', closeNowPlaying);
