@@ -3,452 +3,255 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-  <meta name="mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#000000">
 <link rel="manifest" href="/manifest.json">
-  <meta name="mobile-web-app-capable" content="yes">
 <title>Raaga — Apple Music Edition</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-
-/* ── APPLE MUSIC COLOR PALETTE ── */
 :root{
   --bg: #000000;
   --surface: #1c1c1e;
-  --surface-hover: #2c2c2e;
   --glass-bg: rgba(28, 28, 30, 0.65);
   --glass-border: rgba(255, 255, 255, 0.08);
-  --accent: #fa243c; /* Apple Music Red */
+  --accent: #fa243c;
   --accent-glow: rgba(250, 36, 60, 0.3);
   --text: #ffffff;
-  --text-dim: #ebebf599; /* iOS secondary label */
-  --text-muted: #ebebf54d; /* iOS tertiary label */
+  --text-dim: #ebebf599;
+  --text-muted: #ebebf54d;
   --player-h: 84px;
   --nav-w: 240px;
   --radius: 12px;
 }
 html,body{height:100%}
 body{
-  background:var(--bg); color:var(--text); 
+  background:var(--bg); color:var(--text);
   font-family:'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   overflow:hidden; user-select:none; -webkit-tap-highlight-color:transparent;
 }
 .app{
-  display:grid; grid-template-columns:var(--nav-w) 1fr; grid-template-rows:1fr var(--player-h); 
-  height:100vh; height:100dvh; background:var(--bg);
+  display:grid; grid-template-columns:var(--nav-w) 1fr; grid-template-rows:1fr var(--player-h);
+  height:100vh; height:100dvh;
 }
-
-/* ── SIDEBAR (macOS Style) ── */
 .sidebar{
-  grid-row:1; grid-column:1; display:flex; flex-direction:column; gap:8px; 
-  padding: 24px 16px; background: #000000; border-right: 1px solid var(--glass-border);
-  z-index: 5;
+  grid-row:1; grid-column:1; display:flex; flex-direction:column; gap:8px;
+  padding:24px 16px; background:#000; border-right:1px solid var(--glass-border); z-index:5;
 }
-.logo{display:flex; align-items:center; gap:12px; margin-bottom:2rem; padding: 0 8px; text-decoration:none}
-.logo-icon{
-  width:32px; height:32px; background:var(--accent); border-radius:8px; 
-  display:flex; align-items:center; justify-content:center; font-size:18px; 
-  flex-shrink:0; box-shadow: 0 4px 12px var(--accent-glow);
-}
-.logo-text{font-size:1.4rem; font-weight:800; letter-spacing:-0.03em; color:var(--text)}
-
-nav{display:flex; flex-direction:column; gap:4px}
-.nav-btn{
-  display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:8px; 
-  cursor:pointer; color:var(--text-dim); font-size:.9rem; font-weight:600; 
-  transition:all .2s ease; background:transparent; border:none; width:100%; text-align:left; font-family:inherit;
-}
-.nav-btn:hover{color:var(--text); background: rgba(255,255,255,0.05)}
-.nav-btn.active{color:var(--accent); background: rgba(250, 36, 60, 0.1)}
-.nav-btn svg{width:20px; height:20px; fill:currentColor; flex-shrink:0}
-
-.sidebar-lib{margin-top:2rem; padding: 0 12px; flex:1; display:flex; flex-direction:column}
-.lib-top{
-  display:flex; align-items:center; gap:8px; margin-bottom:12px; color:var(--text-muted); 
-  font-size:.75rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase;
-}
-.lib-hint{font-size:.8rem; color:var(--text-muted); line-height:1.6}
-
-/* ── MAIN CONTENT ── */
-.main{
-  grid-row:1; grid-column:2; background:#000000; overflow-y:auto; overflow-x:hidden; 
-  scrollbar-width:none; position:relative; padding-bottom: 20px;
-}
-.main::-webkit-scrollbar{display:none} /* Clean Apple look */
-
-/* HOME */
-#view-home{animation:fadeIn .4s cubic-bezier(0.2, 0.8, 0.2, 1)}
-.home-hero{padding: 3rem 2.5rem 1rem;}
-.home-greeting{font-size:2.2rem; font-weight:800; letter-spacing:-0.04em; line-height:1.15; margin-bottom:4px}
-.home-sub{font-size:1rem; color:var(--text-dim); font-weight:500}
-.home-body{padding: 1rem 2.5rem 4rem}
-
+.logo{display:flex;align-items:center;gap:12px;margin-bottom:2rem;padding:0 8px;text-decoration:none}
+.logo-icon{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;box-shadow:0 4px 12px var(--accent-glow)}
+.logo-text{font-size:1.4rem;font-weight:800;letter-spacing:-0.03em}
+nav{display:flex;flex-direction:column;gap:4px}
+.nav-btn{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;cursor:pointer;color:var(--text-dim);font-size:.9rem;font-weight:600;transition:all .2s;background:transparent;border:none;width:100%;text-align:left;font-family:inherit}
+.nav-btn:hover{color:var(--text);background:rgba(255,255,255,0.05)}
+.nav-btn.active{color:var(--accent);background:rgba(250,36,60,0.1)}
+.nav-btn svg{width:20px;height:20px;fill:currentColor;flex-shrink:0}
+.sidebar-lib{margin-top:2rem;padding:0 12px;flex:1;display:flex;flex-direction:column}
+.lib-top{display:flex;align-items:center;gap:8px;margin-bottom:12px;color:var(--text-muted);font-size:.75rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.lib-hint{font-size:.8rem;color:var(--text-muted);line-height:1.6}
+.main{grid-row:1;grid-column:2;background:#000;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;position:relative;padding-bottom:20px}
+.main::-webkit-scrollbar{display:none}
+#view-home{animation:fadeIn .4s cubic-bezier(0.2,0.8,0.2,1)}
+.home-hero{padding:3rem 2.5rem 1rem}
+.home-greeting{font-size:2.2rem;font-weight:800;letter-spacing:-0.04em;line-height:1.15;margin-bottom:4px}
+.home-sub{font-size:1rem;color:var(--text-dim);font-weight:500}
+.home-body{padding:1rem 2.5rem 4rem}
 .sec-block{margin-bottom:2.5rem}
-.sec-head{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:1.2rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 8px;}
-.sec-title{font-size:1.2rem; font-weight:700; letter-spacing:-0.02em}
-.see-all{
-  font-size:.8rem; font-weight:600; color:var(--accent); cursor:pointer; 
-  background:none; border:none; font-family:inherit; transition:opacity .15s; padding:0;
-}
-.see-all:hover{opacity:0.7}
-.sec-scroll{display:flex; gap:16px; overflow-x:auto; padding-bottom:10px; scrollbar-width:none; -webkit-overflow-scrolling:touch}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1.2rem;border-bottom:1px solid var(--glass-border);padding-bottom:8px}
+.sec-title{font-size:1.2rem;font-weight:700;letter-spacing:-0.02em}
+.sec-scroll{display:flex;gap:16px;overflow-x:auto;padding-bottom:10px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .sec-scroll::-webkit-scrollbar{display:none}
-
-/* MUSIC CARD (Apple Style) */
-.mcard{flex-shrink:0; width:160px; cursor:pointer; transition:transform 0.2s ease;}
+.mcard{flex-shrink:0;width:160px;cursor:pointer;transition:transform 0.2s ease}
 .mcard:active{transform:scale(0.96)}
-.mcard-art{
-  position:relative; width:160px; height:160px; border-radius:var(--radius); overflow:hidden; 
-  background:var(--surface); margin-bottom:12px; border: 1px solid var(--glass-border);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4); transition:box-shadow .3s ease;
-}
-.mcard:hover .mcard-art{box-shadow: 0 12px 32px rgba(0,0,0,0.6)}
-.mcard-img{width:100%; height:100%; object-fit:cover; display:block; transition:transform .4s ease}
+.mcard-art{position:relative;width:160px;height:160px;border-radius:var(--radius);overflow:hidden;background:var(--surface);margin-bottom:12px;border:1px solid var(--glass-border);box-shadow:0 8px 24px rgba(0,0,0,0.4);transition:box-shadow .3s}
+.mcard:hover .mcard-art{box-shadow:0 12px 32px rgba(0,0,0,0.6)}
+.mcard-img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s}
 .mcard:hover .mcard-img{transform:scale(1.04)}
-
-/* The Play Overlay */
-.mcard-overlay{
-  position:absolute; bottom:8px; right:8px; width:36px; height:36px; 
-  background:rgba(0,0,0,0.6); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
-  border-radius:50%; display:flex; align-items:center; justify-content:center; 
-  opacity:0; transform:scale(0.9); transition:all .2s ease;
-}
-.mcard:hover .mcard-overlay, .mcard.playing .mcard-overlay{opacity:1; transform:scale(1)}
-.mcard-overlay svg{fill:#fff; width:16px; height:16px; margin-left: 2px;}
-
-.mcard-title{font-size:.9rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--text);}
+.mcard-overlay{position:absolute;bottom:8px;right:8px;width:36px;height:36px;background:rgba(0,0,0,0.6);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-radius:50%;display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(0.9);transition:all .2s}
+.mcard:hover .mcard-overlay,.mcard.playing .mcard-overlay{opacity:1;transform:scale(1)}
+.mcard-overlay svg{fill:#fff;width:16px;height:16px;margin-left:2px}
+.mcard-title{font-size:.9rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mcard.playing .mcard-title{color:var(--accent)}
-.mcard-artist{font-size:.8rem; color:var(--text-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px}
-
-/* SHIMMER */
-.shimmer-art{background:var(--surface); animation:pulse 1.5s infinite alternate}
-.shimmer-line{height:12px; border-radius:6px; margin-bottom:8px; background:var(--surface); animation:pulse 1.5s infinite alternate}
-.shimmer-line.w80{width:80%}.shimmer-line.w55{width:55%; height:10px}
+.mcard-artist{font-size:.8rem;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.shimmer-art{background:var(--surface);animation:pulse 1.5s infinite alternate}
+.shimmer-line{height:12px;border-radius:6px;margin-bottom:8px;background:var(--surface);animation:pulse 1.5s infinite alternate}
+.shimmer-line.w80{width:80%}.shimmer-line.w55{width:55%;height:10px}
 @keyframes pulse{from{opacity:0.6}to{opacity:1}}
-
-/* SEARCH (Apple Style) */
 #view-search{animation:fadeIn .3s ease}
 .search-wrap{padding:3rem 2.5rem 2rem}
-.search-box{position:relative; max-width:500px; margin-bottom:2rem}
-.search-box input{
-  width:100%; background:var(--surface); border:1px solid var(--glass-border); 
-  border-radius:12px; padding:16px 20px 16px 50px; color:var(--text); 
-  font-family:'Plus Jakarta Sans', sans-serif; font-size:1rem; font-weight:500; 
-  outline:none; transition:all .2s ease;
-}
-.search-box input:focus{background:#252527; border-color:rgba(255,255,255,0.2); box-shadow: 0 4px 20px rgba(0,0,0,0.3)}
+.search-box{position:relative;max-width:500px;margin-bottom:2rem}
+.search-box input{width:100%;background:var(--surface);border:1px solid var(--glass-border);border-radius:12px;padding:16px 20px 16px 50px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:1rem;font-weight:500;outline:none;transition:all .2s}
+.search-box input:focus{background:#252527;border-color:rgba(255,255,255,0.2);box-shadow:0 4px 20px rgba(0,0,0,0.3)}
 .search-box input::placeholder{color:var(--text-muted)}
-.s-icon{position:absolute; left:18px; top:50%; transform:translateY(-50%); color:var(--text-dim); pointer-events:none; width:20px; height:20px}
-
-.r-header{font-size:1.5rem; font-weight:700; letter-spacing:-0.02em; margin-bottom:1.5rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px;}
-#status{color:var(--text-dim); font-size:.9rem; padding:4rem 0; text-align:center; display:flex; flex-direction:column; align-items:center; gap:12px}
-.status-icon{font-size:3rem; opacity:.2}
-.results-list{display:flex; flex-direction:column; gap:4px}
-
-/* TRACK ROWS (List style) */
-.trow{
-  display:grid; grid-template-columns:36px 48px 1fr auto; align-items:center; gap:14px; 
-  padding:8px 12px; border-radius:8px; cursor:pointer; transition:background .15s; 
-  border-bottom: 1px solid transparent; animation:fadeUp .3s ease both;
-}
+.s-icon{position:absolute;left:18px;top:50%;transform:translateY(-50%);color:var(--text-dim);pointer-events:none;width:20px;height:20px}
+.r-header{font-size:1.5rem;font-weight:700;letter-spacing:-0.02em;margin-bottom:1.5rem;border-bottom:1px solid var(--glass-border);padding-bottom:10px}
+#status{color:var(--text-dim);font-size:.9rem;padding:4rem 0;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px}
+.status-icon{font-size:3rem;opacity:.2}
+.results-list{display:flex;flex-direction:column;gap:4px}
+.trow{display:grid;grid-template-columns:36px 48px 1fr auto;align-items:center;gap:14px;padding:8px 12px;border-radius:8px;cursor:pointer;transition:background .15s;animation:fadeUp .3s ease both}
 .trow:hover{background:var(--surface)}
-.trow.playing{background: rgba(250, 36, 60, 0.08)}
-.tnum{text-align:right; font-size:.85rem; color:var(--text-muted); font-variant-numeric:tabular-nums; position:relative}
+.trow.playing{background:rgba(250,36,60,0.08)}
+.tnum{text-align:right;font-size:.85rem;color:var(--text-muted);font-variant-numeric:tabular-nums;position:relative}
 .tnum .n{transition:opacity .15s}
-.tnum .pb{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity .15s; font-size:12px}
+.tnum .pb{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;font-size:12px}
 .trow:hover .tnum .n{opacity:0}.trow:hover .tnum .pb{opacity:1}
-.trow.playing .tnum .n{opacity:0}.trow.playing .tnum .pb{opacity:1; color:var(--accent)}
-.tthumb{width:48px; height:48px; border-radius:6px; object-fit:cover; background:var(--surface); display:block; border: 1px solid var(--glass-border);}
+.trow.playing .tnum .n{opacity:0}.trow.playing .tnum .pb{opacity:1;color:var(--accent)}
+.tthumb{width:48px;height:48px;border-radius:6px;object-fit:cover;background:var(--surface);display:block;border:1px solid var(--glass-border)}
 .tinfo{min-width:0}
-.ttitle{font-size:.95rem; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.ttitle{font-size:.95rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .trow.playing .ttitle{color:var(--accent)}
-.tartist{font-size:.8rem; color:var(--text-dim); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-
-/* Equalizer Animation */
-.eq{display:none; align-items:flex-end; gap:3px; height:16px}
+.tartist{font-size:.8rem;color:var(--text-dim);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.eq{display:none;align-items:flex-end;gap:3px;height:16px}
 .trow.playing .eq{display:flex}
-.eqb{width:3px; background:var(--accent); border-radius:2px; animation:eqb .6s ease-in-out infinite alternate}
-.eqb:nth-child(1){height:40%; animation-delay:0s}.eqb:nth-child(2){height:100%; animation-delay:.15s}.eqb:nth-child(3){height:60%; animation-delay:.3s}
+.eqb{width:3px;background:var(--accent);border-radius:2px;animation:eqb .6s ease-in-out infinite alternate}
+.eqb:nth-child(1){height:40%;animation-delay:0s}.eqb:nth-child(2){height:100%;animation-delay:.15s}.eqb:nth-child(3){height:60%;animation-delay:.3s}
 @keyframes eqb{from{transform:scaleY(.3)}to{transform:scaleY(1)}}
 
-/* ── BOTTOM PLAYER (Floating Glass) ── */
-.player{
-  grid-row:2; grid-column:1/-1; background:var(--glass-bg); 
-  backdrop-filter: saturate(180%) blur(24px); -webkit-backdrop-filter: saturate(180%) blur(24px);
-  border-top:1px solid var(--glass-border); display:flex; align-items:center; 
-  padding:0 24px; gap:1rem; height:var(--player-h); z-index:100; cursor:pointer;
+/* ── Loading spinner ── */
+.stream-spinner{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:rgba(0,0,0,0.7);z-index:5;gap:12px;border-radius:16px;
 }
-.p-left{display:flex; align-items:center; gap:14px; width:30%; min-width: 200px; flex-shrink:0}
-#p-thumb{width:48px; height:48px; border-radius:6px; object-fit:cover; background:var(--surface); border:1px solid var(--glass-border); display:block; box-shadow: 0 4px 10px rgba(0,0,0,0.3)}
+.spinner{width:36px;height:36px;border:3px solid rgba(255,255,255,0.15);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.stream-spinner span{font-size:.8rem;color:var(--text-dim);font-weight:500}
+
+/* ── BOTTOM PLAYER ── */
+.player{grid-row:2;grid-column:1/-1;background:var(--glass-bg);backdrop-filter:saturate(180%) blur(24px);-webkit-backdrop-filter:saturate(180%) blur(24px);border-top:1px solid var(--glass-border);display:flex;align-items:center;padding:0 24px;gap:1rem;height:var(--player-h);z-index:100;cursor:pointer}
+.p-left{display:flex;align-items:center;gap:14px;width:30%;min-width:200px;flex-shrink:0}
+#p-thumb{width:48px;height:48px;border-radius:6px;object-fit:cover;background:var(--surface);border:1px solid var(--glass-border);display:block;box-shadow:0 4px 10px rgba(0,0,0,0.3)}
 .p-meta{min-width:0}
-#p-title{font-size:.9rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:2px}
-#p-artist{font-size:.75rem; color:var(--text-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-
-.p-center{flex:1; display:flex; flex-direction:column; align-items:center; justify-content: center; gap:8px}
-.p-ctrls{display:flex; align-items:center; gap:24px}
-.cbtn{
-  background:none; border:none; color:var(--text-dim); cursor:pointer; 
-  display:flex; align-items:center; justify-content:center; transition:all .15s; padding:4px;
-}
-.cbtn:hover{color:var(--text); transform:scale(1.05)}.cbtn svg{width:18px; height:18px; fill:currentColor}
-.cbtn.pp{width:40px; height:40px; background:var(--text); border-radius:50%; color:#000; box-shadow: 0 4px 12px rgba(255,255,255,0.1)}
-.cbtn.pp:hover{background:#e0e0e0; transform:scale(1.04)}.cbtn.pp svg{width:20px; height:20px; fill:#000; margin-left: 2px;}
-
-.prog-wrap{display:flex; align-items:center; gap:10px; width:100%; max-width:600px}
-.tlabel{font-size:.65rem; color:var(--text-dim); font-variant-numeric:tabular-nums; flex-shrink:0; width:36px; font-weight:500;}
+#p-title{font-size:.9rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
+#p-artist{font-size:.75rem;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.p-center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+.p-ctrls{display:flex;align-items:center;gap:24px}
+.cbtn{background:none;border:none;color:var(--text-dim);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;padding:4px}
+.cbtn:hover{color:var(--text);transform:scale(1.05)}.cbtn svg{width:18px;height:18px;fill:currentColor}
+.cbtn.pp{width:40px;height:40px;background:var(--text);border-radius:50%;color:#000;box-shadow:0 4px 12px rgba(255,255,255,0.1)}
+.cbtn.pp:hover{background:#e0e0e0;transform:scale(1.04)}.cbtn.pp svg{width:20px;height:20px;fill:#000;margin-left:2px}
+.prog-wrap{display:flex;align-items:center;gap:10px;width:100%;max-width:600px}
+.tlabel{font-size:.65rem;color:var(--text-dim);font-variant-numeric:tabular-nums;flex-shrink:0;width:36px;font-weight:500}
 .tlabel.r{text-align:right}
-.prog-bar{flex:1; height:4px; background:rgba(255,255,255,.1); border-radius:2px; cursor:pointer; transition:height .15s; position:relative}
+.prog-bar{flex:1;height:4px;background:rgba(255,255,255,.1);border-radius:2px;cursor:pointer;transition:height .15s;position:relative}
 .prog-bar:hover{height:6px}
-.prog-fill{height:100%; background:var(--text); border-radius:2px; width:0%; transition:background .15s; pointer-events:none; position:relative;}
+.prog-fill{height:100%;background:var(--text);border-radius:2px;width:0%;transition:background .15s;pointer-events:none;position:relative}
 .prog-bar:hover .prog-fill{background:var(--accent)}
-.prog-fill::after{
-  content:''; position:absolute; right:-6px; top:50%; transform:translateY(-50%) scale(0); 
-  width:12px; height:12px; background:#fff; border-radius:50%; transition:transform .15s;
-  box-shadow: 0 0 4px rgba(0,0,0,0.5);
-}
+.prog-fill::after{content:'';position:absolute;right:-6px;top:50%;transform:translateY(-50%) scale(0);width:12px;height:12px;background:#fff;border-radius:50%;transition:transform .15s;box-shadow:0 0 4px rgba(0,0,0,0.5)}
 .prog-bar:hover .prog-fill::after{transform:translateY(-50%) scale(1)}
-
-.p-right{width:30%; min-width:150px; flex-shrink:0; display:flex; align-items:center; justify-content:flex-end; gap:12px}
-.vol-wrap{display:flex; align-items:center; gap:8px}
-.vol-bar{width:90px; height:4px; background:rgba(255,255,255,.1); border-radius:2px; cursor:pointer; transition:height .15s}
+.p-right{width:30%;min-width:150px;flex-shrink:0;display:flex;align-items:center;justify-content:flex-end;gap:12px}
+.vol-wrap{display:flex;align-items:center;gap:8px}
+.vol-bar{width:90px;height:4px;background:rgba(255,255,255,.1);border-radius:2px;cursor:pointer;transition:height .15s}
 .vol-bar:hover{height:6px}
-.vol-fill{height:100%; background:var(--text-dim); border-radius:2px; width:70%}
-.vol-bar:hover .vol-fill{background:var(--text)}
-
-/* Mobile Bottom Nav */
+.vol-fill{height:100%;background:var(--text-dim);border-radius:2px;width:70%}
 .mob-nav{display:none}
 
-/* ── NOW PLAYING OVERLAY (Apple Music Style Fullscreen) ── */
-.np-overlay{
-  position:fixed; inset:0; z-index:2000; display:flex; align-items:center; justify-content:center; 
-  padding:20px; opacity:0; visibility:hidden; pointer-events:none; transition:all .4s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-.np-overlay.open{opacity:1; visibility:visible; pointer-events:all}
-
-/* The Blurred Ambient Background */
-.np-backdrop{
-  position:absolute; inset:0; background:rgba(0,0,0,0.5); 
-  backdrop-filter:saturate(200%) blur(60px); -webkit-backdrop-filter:saturate(200%) blur(60px);
-}
-.np-backdrop-img{
-  position:absolute; inset:0; width:100%; height:100%; object-fit:cover; 
-  opacity:0.3; filter:blur(40px); transform:scale(1.1);
-}
-
-.np-panel{
-  position:relative; width:100%; max-width: 500px; /* Slimmer, phone-like proportions even on desktop */
-  background:transparent; display:flex; flex-direction:column;
-  transform:translateY(40px) scale(0.95); transition:all .4s cubic-bezier(0.2, 0.8, 0.2, 1);
-  height: 90vh; max-height: 850px;
-}
+/* ── NOW PLAYING OVERLAY ── */
+.np-overlay{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;visibility:hidden;pointer-events:none;transition:all .4s cubic-bezier(0.2,0.8,0.2,1)}
+.np-overlay.open{opacity:1;visibility:visible;pointer-events:all}
+.np-backdrop{position:absolute;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:saturate(200%) blur(60px);-webkit-backdrop-filter:saturate(200%) blur(60px)}
+.np-backdrop-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.3;filter:blur(40px);transform:scale(1.1)}
+.np-panel{position:relative;width:100%;max-width:500px;background:transparent;display:flex;flex-direction:column;transform:translateY(40px) scale(0.95);transition:all .4s cubic-bezier(0.2,0.8,0.2,1);height:90vh;max-height:850px}
 .np-overlay.open .np-panel{transform:translateY(0) scale(1)}
-
-/* Header buttons */
-.np-close{
-  position:absolute; top:0; left:0; width:40px; height:40px; border:none; border-radius:50%; 
-  background:rgba(255,255,255,.1); color:var(--text); cursor:pointer; z-index:10; 
-  display:flex; align-items:center; justify-content:center; transition:background .2s; backdrop-filter:blur(10px);
-}
-.np-close:hover{background:rgba(255,255,255,.2)}.np-close svg{width:20px; height:20px; fill:currentColor; transform:rotate(-90deg)}
-
-.np-fs-btn{
-  position:absolute; top:0; right:0; width:40px; height:40px; border:none; border-radius:50%; 
-  background:rgba(255,255,255,.1); color:var(--text); cursor:pointer; z-index:10; 
-  display:flex; align-items:center; justify-content:center; transition:background .2s; backdrop-filter:blur(10px);
-}
-.np-fs-btn:hover{background:rgba(255,255,255,.2)}.np-fs-btn svg{width:18px; height:18px; fill:currentColor}
-
-/* Fullscreen state overrides */
+.np-close{position:absolute;top:0;left:0;width:40px;height:40px;border:none;border-radius:50%;background:rgba(255,255,255,.1);color:var(--text);cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center;transition:background .2s;backdrop-filter:blur(10px)}
+.np-close:hover{background:rgba(255,255,255,.2)}.np-close svg{width:20px;height:20px;fill:currentColor}
+.np-fs-btn{position:absolute;top:0;right:0;width:40px;height:40px;border:none;border-radius:50%;background:rgba(255,255,255,.1);color:var(--text);cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center;transition:background .2s;backdrop-filter:blur(10px)}
+.np-fs-btn:hover{background:rgba(255,255,255,.2)}.np-fs-btn svg{width:18px;height:18px;fill:currentColor}
 .np-overlay.fullscreen{padding:0}
-.np-overlay.fullscreen .np-panel{max-width:100%; height:100vh; max-height:100vh;}
-.np-overlay.fullscreen .np-art-wrap{margin-top:0; border-radius:0; height:100%; max-height:none;}
-.np-overlay.fullscreen .np-bottom{position:absolute; bottom:0; left:0; right:0; background:linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%); padding-bottom:40px;}
-.np-overlay.fullscreen .np-close{top: 20px; left: 20px;}
-.np-overlay.fullscreen .np-fs-btn{top: 20px; right: 20px;}
+.np-overlay.fullscreen .np-panel{max-width:100%;height:100vh;max-height:100vh}
+.np-overlay.fullscreen .np-art-wrap{margin-top:0;border-radius:0;height:100%;max-height:none}
+.np-overlay.fullscreen .np-bottom{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,0.9) 0%,transparent 100%);padding-bottom:40px}
+.np-overlay.fullscreen .np-close{top:20px;left:20px}
+.np-overlay.fullscreen .np-fs-btn{top:20px;right:20px}
 .fs-expand{display:flex}.fs-compress{display:none}
 .np-overlay.fullscreen .fs-expand{display:none}.np-overlay.fullscreen .fs-compress{display:flex}
+.np-art-wrap{position:relative;width:100%;aspect-ratio:1/1;max-height:50vh;margin-top:60px;border-radius:16px;overflow:hidden;background:#111;box-shadow:0 30px 60px rgba(0,0,0,0.6);transition:all .4s cubic-bezier(0.2,0.8,0.2,1)}
+.np-art-wrap.video-mode{aspect-ratio:16/9;margin-top:auto;margin-bottom:auto}
 
-/* ── BIG ART AREA ── */
-.np-art-wrap{
-  position:relative; width:100%; aspect-ratio:1/1; max-height: 50vh; 
-  margin-top: 60px; border-radius:16px; overflow:hidden; background:#111; 
-  box-shadow: 0 30px 60px rgba(0,0,0,0.6); transition:all .4s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-/* Video mode changes the aspect ratio */
-.np-art-wrap.video-mode { aspect-ratio: 16/9; margin-top: auto; margin-bottom: auto;}
+/* YT frame — hidden by default, shown only in video mode */
+#yt-player-frame{position:absolute;inset:0;width:100%;height:100%;border:none;background:#000;display:block;z-index:1;pointer-events:none;opacity:0;transition:opacity .35s ease}
+.np-art-wrap.video-mode #yt-player-frame{opacity:1;pointer-events:auto}
 
-/* THE INVISIBLE SHIELD */
-#yt-player-frame{
-  position:absolute; inset:0; width:100%; height:100%; border:none; 
-  background:#000; display:block; z-index:1; pointer-events:none; 
-}
-#np-art-cover{
-  position:absolute; inset:0; z-index:2; width:100%; height:100%; 
-  object-fit:cover; transition:opacity .4s ease; opacity:1; pointer-events:none;
-}
+#np-art-cover{position:absolute;inset:0;z-index:2;width:100%;height:100%;object-fit:cover;transition:opacity .35s ease;opacity:1;pointer-events:none}
 .np-art-wrap.video-mode #np-art-cover{opacity:0}
 
-/* Video Toggle Pill */
-.art-pill{
-  position:absolute; top:-40px; right:50px; z-index:10;
-  display:inline-flex; align-items:center; gap:6px; padding:8px 16px;
-  background:rgba(255,255,255,0.1); color:#fff; border:none;
-  border-radius:999px; font-size:.8rem; font-weight:600; cursor:pointer; font-family:inherit;
-  transition:all .2s; backdrop-filter:blur(10px);
-}
+.art-pill{position:absolute;top:-40px;right:50px;z-index:10;display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:rgba(255,255,255,0.1);color:#fff;border:none;border-radius:999px;font-size:.8rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;backdrop-filter:blur(10px)}
 .art-pill:hover{background:rgba(255,255,255,0.2)}
-.art-pill svg{width:14px; height:14px; fill:currentColor; flex-shrink:0}
-.art-pill.on{background:var(--text); color:#000}
-
-/* Bottom Panel UI */
-.np-bottom{display:flex; flex-direction:column; justify-content:flex-end; flex:1; padding-bottom:20px; margin-top:30px;}
-.np-info{display:flex; flex-direction:column; align-items:flex-start; margin-bottom: 24px;}
-.np-song-title{font-size:1.6rem; font-weight:800; letter-spacing:-0.03em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%; text-align:left;}
-.np-song-artist{font-size:1.1rem; color:var(--text-dim); margin-top:4px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%; text-align:left;}
-
-.np-prog-wrap{display:flex; flex-direction:column; gap:8px; width:100%; margin-bottom: 30px;}
-.np-prog-bar{width:100%; height:6px; background:rgba(255,255,255,.15); border-radius:3px; cursor:pointer; position:relative;}
-.np-prog-fill{height:100%; background:var(--text); border-radius:3px; width:0%; pointer-events:none;}
-.np-times{display:flex; justify-content:space-between; width:100%;}
-.np-tlabel{font-size:.7rem; color:var(--text-dim); font-variant-numeric:tabular-nums; font-weight:600;}
-
-.np-ctrls{display:flex; align-items:center; justify-content:center; gap:40px; width:100%;}
-.np-cbtn{background:none; border:none; color:var(--text); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s;}
-.np-cbtn:hover{transform:scale(1.1); color:#fff}
-.np-cbtn svg{width:32px; height:32px; fill:currentColor}
-.np-cbtn.pp{width:72px; height:72px; background:var(--text); border-radius:50%; color:#000; box-shadow: 0 10px 30px rgba(255,255,255,0.2)}
-.np-cbtn.pp:hover{background:#e0e0e0; transform:scale(1.05)}.np-cbtn.pp svg{width:34px; height:34px; fill:#000; margin-left:4px}
-
-/* ANIMATIONS */
-@keyframes fadeUp{from{opacity:0; transform:translateY(12px)}to{opacity:1; transform:translateY(0)}}
+.art-pill svg{width:14px;height:14px;fill:currentColor;flex-shrink:0}
+.art-pill.on{background:var(--text);color:#000}
+.np-bottom{display:flex;flex-direction:column;justify-content:flex-end;flex:1;padding-bottom:20px;margin-top:30px}
+.np-info{display:flex;flex-direction:column;align-items:flex-start;margin-bottom:24px}
+.np-song-title{font-size:1.6rem;font-weight:800;letter-spacing:-0.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
+.np-song-artist{font-size:1.1rem;color:var(--text-dim);margin-top:4px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
+.np-prog-wrap{display:flex;flex-direction:column;gap:8px;width:100%;margin-bottom:30px}
+.np-prog-bar{width:100%;height:6px;background:rgba(255,255,255,.15);border-radius:3px;cursor:pointer;position:relative}
+.np-prog-fill{height:100%;background:var(--text);border-radius:3px;width:0%;pointer-events:none}
+.np-times{display:flex;justify-content:space-between;width:100%}
+.np-tlabel{font-size:.7rem;color:var(--text-dim);font-variant-numeric:tabular-nums;font-weight:600}
+.np-ctrls{display:flex;align-items:center;justify-content:center;gap:40px;width:100%}
+.np-cbtn{background:none;border:none;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.np-cbtn:hover{transform:scale(1.1)}
+.np-cbtn svg{width:32px;height:32px;fill:currentColor}
+.np-cbtn.pp{width:72px;height:72px;background:var(--text);border-radius:50%;color:#000;box-shadow:0 10px 30px rgba(255,255,255,0.2)}
+.np-cbtn.pp:hover{background:#e0e0e0;transform:scale(1.05)}.np-cbtn.pp svg{width:34px;height:34px;fill:#000;margin-left:4px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
-/* TABLET */
 @media(max-width:900px){
   :root{--nav-w:72px}
-  .sidebar{padding: 24px 8px; align-items:center;}
-  .logo-text, .lib-top span:not(svg), .lib-hint, .nav-btn span{display:none}
-  .logo{justify-content:center; margin-bottom:2rem; padding:0;}
-  .nav-btn{justify-content:center; padding:12px}
-  .sidebar-lib{padding:0; margin-top:2rem; align-items:center}.lib-top{justify-content:center; margin-bottom:0}
-  .p-left{width:auto}.p-right{display:none} /* Hide volume on tablet */
-  #p-title, #p-artist{max-width:120px}.tlabel{display:none}
-  .home-hero{padding: 2rem 1.5rem 1rem}.home-body{padding: 1rem 1.5rem 2rem}
+  .sidebar{padding:24px 8px;align-items:center}
+  .logo-text,.lib-top span:not(svg),.lib-hint,.nav-btn span{display:none}
+  .logo{justify-content:center;margin-bottom:2rem;padding:0}
+  .nav-btn{justify-content:center;padding:12px}
+  .sidebar-lib{padding:0;margin-top:2rem;align-items:center}.lib-top{justify-content:center;margin-bottom:0}
+  .p-left{width:auto}.p-right{display:none}
+  #p-title,#p-artist{max-width:120px}.tlabel{display:none}
+  .home-hero{padding:2rem 1.5rem 1rem}.home-body{padding:1rem 1.5rem 2rem}
   .search-wrap{padding:2rem 1.5rem}
 }
-
-/* MOBILE (Bottom Tabs) */
 @media(max-width:640px){
   :root{--player-h:76px}
-  .app{grid-template-columns:1fr; grid-template-rows:1fr var(--player-h) 60px; padding:0; background:var(--bg)}
+  .app{grid-template-columns:1fr;grid-template-rows:1fr var(--player-h) 60px}
   .sidebar{display:none}
-  .main{grid-row:1; grid-column:1;}
-
-  /* Player bar */
-  .player{
-    grid-row:2; grid-column:1; background:var(--glass-bg); padding:0 16px;
-    border-top:1px solid var(--glass-border); position:relative; overflow:hidden;
-  }
-  .player::before{
-    content:''; position:absolute; top:0; left:0; height:2px;
-    width:var(--mob-prog,0%); background:var(--accent);
-    pointer-events:none; transition:width .5s linear; z-index:10;
-  }
+  .main{grid-row:1;grid-column:1}
+  .player{grid-row:2;grid-column:1;padding:0 16px;position:relative;overflow:hidden}
+  .player::before{content:'';position:absolute;top:0;left:0;height:2px;width:var(--mob-prog,0%);background:var(--accent);pointer-events:none;transition:width .5s linear;z-index:10}
   .p-center{display:none}
-  .p-left{flex:1; width:auto}
-  .p-right{width:auto; display:flex; padding-right:4px;}
+  .p-left{flex:1;width:auto}
+  .p-right{width:auto;display:flex;padding-right:4px}
   .p-right .vol-wrap{display:none}
   .cbtn.shuffle,.cbtn.prev,.cbtn.repeat{display:none}
-  #p-thumb{width:48px; height:48px; border-radius:8px}
+  #p-thumb{width:48px;height:48px;border-radius:8px}
   #mob-pp-btn{display:flex !important}
-
-  /* Bottom nav — side by side */
-  .mob-nav{
-    display:flex; flex-direction:row; grid-row:3; grid-column:1;
-    background:var(--glass-bg);
-    backdrop-filter:saturate(180%) blur(24px); -webkit-backdrop-filter:saturate(180%) blur(24px);
-    border-top:1px solid var(--glass-border);
-  }
-  .mnbtn{
-    flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
-    background:none; border:none; color:var(--text-muted); font-family:'Plus Jakarta Sans',sans-serif;
-    font-size:.65rem; font-weight:600; cursor:pointer; transition:color .2s; padding:6px 0;
-  }
+  .mob-nav{display:flex;flex-direction:row;grid-row:3;grid-column:1;background:var(--glass-bg);backdrop-filter:saturate(180%) blur(24px);-webkit-backdrop-filter:saturate(180%) blur(24px);border-top:1px solid var(--glass-border)}
+  .mnbtn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;color:var(--text-muted);font-family:'Plus Jakarta Sans',sans-serif;font-size:.65rem;font-weight:600;cursor:pointer;transition:color .2s;padding:6px 0}
   .mnbtn.active{color:var(--accent)}
-  .mnbtn svg{width:22px; height:22px; fill:currentColor}
-
-  /* Home */
+  .mnbtn svg{width:22px;height:22px;fill:currentColor}
   .home-hero{padding:1.2rem 1rem 0.6rem}
   .home-greeting{font-size:1.7rem}
   .home-body{padding:.5rem 1rem 2rem}
-  .sec-head{border-bottom:none; padding-bottom:0; margin-bottom:.6rem}
+  .sec-head{border-bottom:none;padding-bottom:0;margin-bottom:.6rem}
   .sec-title{font-size:1rem}
-
-  /* Small cards + horizontal scroll per section */
-  .sec-scroll{
-    display:flex !important;
-    flex-wrap:nowrap !important;
-    overflow-x:auto !important;
-    gap:10px !important;
-    padding-bottom:8px;
-    -webkit-overflow-scrolling:touch;
-    scroll-snap-type:x mandatory;
-  }
-  .mcard{
-    width:110px !important;
-    flex-shrink:0 !important;
-    scroll-snap-align:start;
-  }
-  .mcard-art{
-    width:110px !important;
-    height:110px !important;
-  }
+  .sec-scroll{display:flex !important;flex-wrap:nowrap !important;overflow-x:auto !important;gap:10px !important;padding-bottom:8px;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory}
+  .mcard{width:110px !important;flex-shrink:0 !important;scroll-snap-align:start}
+  .mcard-art{width:110px !important;height:110px !important}
   .mcard-title{font-size:.78rem}
   .mcard-artist{font-size:.7rem}
-  /* Always show play overlay on mobile */
-  .mcard .mcard-overlay{opacity:1 !important; transform:scale(1) !important}
-
-  /* Now Playing */
-  .np-panel{height:100%; max-height:none; padding-top:20px;}
-  .np-art-wrap{max-height:42vh;}
+  .mcard .mcard-overlay{opacity:1 !important;transform:scale(1) !important}
+  .np-panel{height:100%;max-height:none;padding-top:20px}
+  .np-art-wrap{max-height:42vh}
   .np-song-title{font-size:1.4rem}
-
-  /* Search rows */
-  .trow{grid-template-columns:48px 1fr auto !important; gap:12px; padding:8px 4px}
+  .trow{grid-template-columns:48px 1fr auto !important;gap:12px;padding:8px 4px}
   .tnum{display:none !important}
 }
-
-  /* --- High-Performance Smooth Animations --- */
-
-.np-overlay {
-  /* This makes the slide-up animation feel like a premium spring */
-  transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1) !important;
-}
-
-.mcard {
-  /* This prepares the card for the click animation */
-  transition: transform 0.2s ease !important;
-  cursor: pointer;
-}
-
-.mcard:active {
-  /* This makes the card shrink slightly when you touch it */
-  transform: scale(0.95) !important;
-}
-
-.np-backdrop {
-  /* This makes the background blur fade in instead of snapping */
-  transition: opacity 0.5s ease;
-}
-  
+.np-overlay{transition:transform 0.4s cubic-bezier(0.32,0.72,0,1) !important}
+.mcard{transition:transform 0.2s ease !important;cursor:pointer}
+.mcard:active{transform:scale(0.95) !important}
 </style>
 </head>
 <body>
 <div class="app">
-
   <aside class="sidebar">
     <a href="#" class="logo">
       <div class="logo-icon">♪</div>
@@ -465,9 +268,7 @@ nav{display:flex; flex-direction:column; gap:4px}
       </button>
     </nav>
     <div class="sidebar-lib">
-      <div class="lib-top">
-        <span>Library</span>
-      </div>
+      <div class="lib-top"><span>Library</span></div>
       <div class="lib-hint">Search for songs to build your queue.</div>
     </div>
   </aside>
@@ -480,7 +281,6 @@ nav{display:flex; flex-direction:column; gap:4px}
       </div>
       <div class="home-body" id="home-body"></div>
     </div>
-
     <div id="view-search" style="display:none">
       <div class="search-wrap">
         <div class="search-box">
@@ -490,10 +290,7 @@ nav{display:flex; flex-direction:column; gap:4px}
         <div id="section-header" style="display:none">
           <div class="r-header" id="section-title">Results</div>
         </div>
-        <div id="status">
-          <div class="status-icon">♪</div>
-          <div>Search for a track or paste a YouTube Playlist URL</div>
-        </div>
+        <div id="status"><div class="status-icon">♪</div><div>Search for a track or paste a YouTube Playlist URL</div></div>
         <div class="results-list" id="results"></div>
       </div>
     </div>
@@ -526,7 +323,7 @@ nav{display:flex; flex-direction:column; gap:4px}
           <svg id="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
           <svg id="pause-icon" viewBox="0 0 24 24" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
         </button>
-        <button class="cbtn next-btn" id="next-btn"><svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
+        <button class="cbtn" id="next-btn"><svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
         <button class="cbtn repeat"><svg viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg></button>
       </div>
       <div class="prog-wrap">
@@ -536,7 +333,7 @@ nav{display:flex; flex-direction:column; gap:4px}
       </div>
     </div>
     <div class="p-right">
-      <button class="cbtn pp" id="mob-pp-btn" style="display:none" onclick="event.stopPropagation(); if(ytPlayer){isPlaying?ytPlayer.pauseVideo():ytPlayer.playVideo()}">
+      <button class="cbtn pp" id="mob-pp-btn" style="display:none" onclick="event.stopPropagation();togglePlayPause()">
         <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
       </button>
       <div class="vol-wrap">
@@ -545,39 +342,39 @@ nav{display:flex; flex-direction:column; gap:4px}
       </div>
     </div>
   </div>
+</div>
 
-</div><div class="np-overlay" id="np-overlay">
+<div class="np-overlay" id="np-overlay">
   <img id="np-bg-img" class="np-backdrop-img" src=""/>
   <div class="np-backdrop" id="np-backdrop"></div>
-  
   <div class="np-panel">
     <button class="np-close" id="np-close-btn">
       <svg viewBox="0 0 24 24"><path d="M18.3 5.71 12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.3 19.71 2.89 18.3 9.18 12 2.89 5.71 4.3 4.29l6.29 6.3 6.3-6.3z"/></svg>
     </button>
-    <button class="np-fs-btn" id="np-fs-btn" title="Fullscreen">
+    <button class="np-fs-btn" id="np-fs-btn">
       <svg class="fs-expand" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
       <svg class="fs-compress" viewBox="0 0 24 24" style="display:none"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>
     </button>
-
     <div class="np-art-wrap" id="np-art-wrap">
+      <div class="stream-spinner" id="stream-spinner" style="display:none">
+        <div class="spinner"></div>
+        <span>Loading audio…</span>
+      </div>
       <div id="yt-player-frame"></div>
       <img id="np-art-cover" src="" alt=""/>
     </div>
-
-    <div style="position:relative; width:100%; height:0; z-index: 10;">
+    <div style="position:relative;width:100%;height:0;z-index:10;">
       <button class="art-pill" id="vid-toggle-btn">
         <svg id="vid-icon-video" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
         <svg id="vid-icon-audio" viewBox="0 0 24 24" style="display:none"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
         <span id="vid-label">Switch to Video</span>
       </button>
     </div>
-
     <div class="np-bottom">
       <div class="np-info">
         <div class="np-song-title" id="np-song-title">—</div>
         <div class="np-song-artist" id="np-song-artist"></div>
       </div>
-      
       <div class="np-prog-wrap">
         <div class="np-prog-bar" id="np-prog-bar"><div class="np-prog-fill" id="np-prog-fill"></div></div>
         <div class="np-times">
@@ -585,7 +382,6 @@ nav{display:flex; flex-direction:column; gap:4px}
           <span class="np-tlabel r" id="np-t-tot">0:00</span>
         </div>
       </div>
-
       <div class="np-ctrls">
         <button class="np-cbtn" id="np-prev-btn"><svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg></button>
         <button class="np-cbtn pp" id="np-pp-btn">
@@ -598,48 +394,22 @@ nav{display:flex; flex-direction:column; gap:4px}
   </div>
 </div>
 
+<!-- The real background-capable audio player -->
+<audio id="bg-audio" playsinline preload="none"></audio>
+
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
 const API = 'https://new-youtube-o7cl.onrender.com';
 
-// Update these with curated playlists or your previous queries
 const HOME_SECTIONS = [
-  { 
-    id: 'bollywood', 
-    title: '🎵 Bollywood Hot Hits',       
-    type: 'search', 
-    // Using search guarantees a fresh, mixed list of distinct songs
-    value: 'latest bollywood songs 2024 "Provided to YouTube"' 
-  },
-  { 
-    id: 'classics', 
-    title: '📻 All Time Hindi Classics',       
-    type: 'search', 
-    value: 'best 90s hindi romantic songs "Provided to YouTube"' 
-  },
-  { 
-    id: 'tseries', 
-    title: '🔥 Latest from T-Series',          
-    type: 'playlist', 
-    // This is your working T-Series playlist!
-    value: 'UUq-Fj5jknLsUf-MWSy4_brA' 
-  },
-  { 
-    id: 'arijit', 
-    title: '🎤 Arijit Singh Essentials',          
-    type: 'search', 
-    value: 'arijit singh best songs "Provided to YouTube"' 
-  },
-  { 
-    id: 'lofi', 
-    title: '☕ Chill Lofi Beats',          
-    type: 'playlist', 
-    // Lofi Girl Official Uploads
-    value: 'UUSJ4gkVC6NrvII8umztf0Ow' 
-  }
+  { id:'bollywood', title:'🎵 Bollywood Hot Hits',      type:'search',   value:'latest bollywood songs 2024 "Provided to YouTube"' },
+  { id:'classics',  title:'📻 All Time Hindi Classics', type:'search',   value:'best 90s hindi romantic songs "Provided to YouTube"' },
+  { id:'tseries',   title:'🔥 Latest from T-Series',    type:'playlist', value:'UUq-Fj5jknLsUf-MWSy4_brA' },
+  { id:'arijit',    title:'🎤 Arijit Singh Essentials', type:'search',   value:'arijit singh best songs "Provided to YouTube"' },
+  { id:'lofi',      title:'☕ Chill Lofi Beats',         type:'playlist', value:'UUSJ4gkVC6NrvII8umztf0Ow' }
 ];
 
-/* ── DOM refs ── */
+/* ── DOM ── */
 const resultsEl    = document.getElementById('results');
 const statusEl     = document.getElementById('status');
 const secHeader    = document.getElementById('section-header');
@@ -661,7 +431,7 @@ const volFill      = document.getElementById('vol-fill');
 const playerBar    = document.getElementById('player-bar');
 const npOverlay    = document.getElementById('np-overlay');
 const npBackdrop   = document.getElementById('np-backdrop');
-const npBgImg      = document.getElementById('np-bg-img'); // New blurred background
+const npBgImg      = document.getElementById('np-bg-img');
 const npCloseBtn   = document.getElementById('np-close-btn');
 const npArtWrap    = document.getElementById('np-art-wrap');
 const npArtCover   = document.getElementById('np-art-cover');
@@ -680,6 +450,8 @@ const vidToggleBtn = document.getElementById('vid-toggle-btn');
 const vidLabel     = document.getElementById('vid-label');
 const vidIconVideo = document.getElementById('vid-icon-video');
 const vidIconAudio = document.getElementById('vid-icon-audio');
+const streamSpinner= document.getElementById('stream-spinner');
+const bgAudio      = document.getElementById('bg-audio');
 
 /* ── State ── */
 let tracks = [], currentIdx = -1, isPlaying = false;
@@ -689,68 +461,56 @@ let activeEl = null, queueEl = null;
 let currentItem = null;
 let videoMode = false, panelOpen = false;
 let currentVolume = 70;
+let audioLoadedId = null; // which videoId is in bgAudio
+let videoLoadedId = null; // which videoId is in ytPlayer
 
-/* ── YT IFrame API ── */
+/* ── YouTube IFrame (Video Mode Only) ── */
 window.onYouTubeIframeAPIReady = () => {
   ytReady = true;
   ytPlayer = new YT.Player('yt-player-frame', {
-    width: '100%', height: '100%',
-    // Native controls remain ON for video mode override
-    playerVars: { autoplay:0, playsinline:1, controls:1, rel:0, modestbranding:1 },
-    events: {
-      onReady(e){
-        e.target.setVolume(currentVolume);
-      },
+    width:'100%', height:'100%',
+    playerVars:{ autoplay:0, playsinline:1, controls:1, rel:0, modestbranding:1 },
+    events:{
       onStateChange(e){
+        if(!videoMode) return; // ignore YT events when in audio mode
         const S = YT.PlayerState;
-        if(e.data === S.PLAYING){
-          isPlaying = true; showPauseAll();
-          try{ duration = ytPlayer.getDuration(); updateTotLabel(); }catch(_){}
-          startLoop();
-        }
-        if(e.data === S.PAUSED) { isPlaying = false; showPlayAll(); stopLoop(); }
-        if(e.data === S.ENDED)  { playNext(); }
+        if(e.data===S.PLAYING){ isPlaying=true; showPauseAll(); startVideoLoop(); }
+        if(e.data===S.PAUSED){  isPlaying=false; showPlayAll();  stopLoop(); }
+        if(e.data===S.ENDED){   playNext(); }
       }
     }
   });
 };
 
-/* ── UI helpers ── */
+/* ── Helpers ── */
 function fmt(s){ s=Math.floor(s||0); return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`; }
 
 function showPlayAll(){
   playIcon.style.display=''; pauseIcon.style.display='none';
   npPlayIcon.style.display=''; npPauseIcon.style.display='none';
-  const mobIcon = document.getElementById('mob-pp-btn');
-  if(mobIcon) mobIcon.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  const m=document.getElementById('mob-pp-btn');
+  if(m) m.innerHTML='<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
 }
-
 function showPauseAll(){
   playIcon.style.display='none'; pauseIcon.style.display='';
   npPlayIcon.style.display='none'; npPauseIcon.style.display='';
-  const mobIcon = document.getElementById('mob-pp-btn');
-  if(mobIcon) mobIcon.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  const m=document.getElementById('mob-pp-btn');
+  if(m) m.innerHTML='<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
 }
-
-function updateTotLabel(){
-  const d = fmt(duration);
-  tTot.textContent = d; npTTot.textContent = d;
-}
+function updateTotLabel(d){ duration=d; tTot.textContent=fmt(d); npTTot.textContent=fmt(d); }
 
 function setNav(v){
   ['home','search'].forEach(n=>{
-    document.getElementById('nav-'+n).classList.toggle('active',v===n);
-    document.getElementById('mob-'+n).classList.toggle('active',v===n);
+    document.getElementById('nav-'+n)?.classList.toggle('active',v===n);
+    document.getElementById('mob-'+n)?.classList.toggle('active',v===n);
   });
 }
-
 function showHome(){
   document.getElementById('view-home').style.display='';
   document.getElementById('view-search').style.display='none';
   setNav('home');
   document.getElementById('main').scrollTo({top:0,behavior:'smooth'});
 }
-
 function showSearch(){
   document.getElementById('view-home').style.display='none';
   document.getElementById('view-search').style.display='';
@@ -758,31 +518,76 @@ function showSearch(){
   setTimeout(()=>document.getElementById('search-input').focus(),80);
 }
 
-/* ── Progress loop ── */
-function startLoop(){
+/* ── Progress loops ── */
+function startAudioLoop(){
+  stopLoop();
+  progTimer = setInterval(()=>{
+    if(bgAudio.paused) return;
+    const t=bgAudio.currentTime, d=bgAudio.duration||duration;
+    const pct=d>0?(t/d)*100:0;
+    progFill.style.width=pct+'%'; npProgFill.style.width=pct+'%';
+    playerBar.style.setProperty('--mob-prog',pct+'%');
+    tCur.textContent=fmt(t); npTCur.textContent=fmt(t);
+  },500);
+}
+function startVideoLoop(){
   stopLoop();
   progTimer = setInterval(()=>{
     if(!ytPlayer?.getCurrentTime) return;
-    const t = ytPlayer.getCurrentTime();
-    if(!duration) try{ duration=ytPlayer.getDuration(); updateTotLabel(); }catch(_){}
-    const pct = duration > 0 ? (t/duration)*100 : 0;
-    progFill.style.width = pct+'%'; npProgFill.style.width = pct+'%';
-    playerBar.style.setProperty('--mob-prog', pct+'%');
-    const f = fmt(t);
-    tCur.textContent = f; npTCur.textContent = f;
-  }, 500);
+    const t=ytPlayer.getCurrentTime(), d=ytPlayer.getDuration()||duration;
+    const pct=d>0?(t/d)*100:0;
+    progFill.style.width=pct+'%'; npProgFill.style.width=pct+'%';
+    playerBar.style.setProperty('--mob-prog',pct+'%');
+    tCur.textContent=fmt(t); npTCur.textContent=fmt(t);
+  },500);
 }
-function stopLoop(){ if(progTimer){ clearInterval(progTimer); progTimer=null; } }
+function stopLoop(){ if(progTimer){clearInterval(progTimer);progTimer=null;} }
 
-/* ── Home sections & API ── */
+/* ── bgAudio events ── */
+bgAudio.addEventListener('loadedmetadata', ()=>updateTotLabel(bgAudio.duration));
+bgAudio.addEventListener('play',  ()=>{ if(!videoMode){isPlaying=true;  showPauseAll(); startAudioLoop();} });
+bgAudio.addEventListener('pause', ()=>{ if(!videoMode){isPlaying=false; showPlayAll();  stopLoop();} });
+bgAudio.addEventListener('ended', ()=>{ if(!videoMode) playNext(); });
+
+/* ── Fetch stream URL and play audio ── */
+async function fetchAndPlayAudio(item, seekTo=0){
+  streamSpinner.style.display='flex';
+  try{
+    const res  = await fetch(`${API}/stream?videoId=${item.videoId}`);
+    const data = await res.json();
+    if(!data.stream) throw new Error('no stream');
+
+    bgAudio.src = data.stream;
+    bgAudio.volume = currentVolume/100;
+    audioLoadedId = item.videoId;
+
+    await bgAudio.play();
+    if(seekTo>1) bgAudio.currentTime=seekTo;
+    streamSpinner.style.display='none';
+  } catch(e){
+    streamSpinner.style.display='none';
+    console.error('Stream fetch failed:',e);
+  }
+}
+
+/* ── Unified play/pause toggle ── */
+function togglePlayPause(){
+  if(videoMode){
+    if(!ytPlayer) return;
+    isPlaying ? ytPlayer.pauseVideo() : ytPlayer.playVideo();
+  } else {
+    if(!bgAudio.src) return;
+    isPlaying ? bgAudio.pause() : bgAudio.play();
+  }
+}
+
+/* ── Home sections ── */
 function buildShimmerSection(sec){
-  const body = document.getElementById('home-body');
-  const block = document.createElement('div');
+  const body=document.getElementById('home-body');
+  const block=document.createElement('div');
   block.className='sec-block'; block.id=`blk-${sec.id}`;
   block.innerHTML=`
-    <div class="sec-head">
-      <span class="sec-title">${sec.title}</span>
-    </div>
+    <div class="sec-head"><span class="sec-title">${sec.title}</span></div>
     <div class="sec-scroll" id="scr-${sec.id}">
       ${Array(7).fill(0).map(()=>`
         <div class="mcard">
@@ -793,12 +598,10 @@ function buildShimmerSection(sec){
     </div>`;
   body.appendChild(block);
 }
-
 function parseTitleArtist(raw){
   const p=raw.split(' - ');
   return p.length>1?{artist:p[0],title:p.slice(1).join(' - ')}:{artist:'',title:raw};
 }
-
 function populateSection(sec,items){
   const scrollEl=document.getElementById(`scr-${sec.id}`);
   if(!scrollEl) return;
@@ -818,35 +621,29 @@ function populateSection(sec,items){
     scrollEl.appendChild(card);
   });
 }
-
-async function loadSection(sec, delay){
-  await new Promise(r => setTimeout(r, delay));
-  try {
-    let endpoint = '';
-    if (sec.type === 'playlist') {
-      endpoint = `${API}/playlist?id=${sec.value}`;
-    } else {
-      endpoint = `${API}/search?q=${encodeURIComponent(sec.value)}`;
-    }
-    const res = await fetch(endpoint);
-    const data = await res.json();
-    if(data?.length) populateSection(sec, data);
+async function loadSection(sec,delay){
+  await new Promise(r=>setTimeout(r,delay));
+  try{
+    const endpoint=sec.type==='playlist'
+      ?`${API}/playlist?id=${sec.value}`
+      :`${API}/search?q=${encodeURIComponent(sec.value)}`;
+    const res=await fetch(endpoint);
+    const data=await res.json();
+    if(data?.length) populateSection(sec,data);
     else document.getElementById(`scr-${sec.id}`).innerHTML='<span style="color:var(--text-muted);font-size:.8rem;padding:.5rem 0;display:block">Nothing found</span>';
   } catch {
     document.getElementById(`scr-${sec.id}`).innerHTML='<span style="color:var(--text-muted);font-size:.8rem;padding:.5rem 0;display:block">Couldn\'t load</span>';
   }
 }
-
 function initHome(){
   document.getElementById('home-body').innerHTML='';
   const h=new Date().getHours();
   const greet=h<5?'Late Night 🌙':h<12?'Good Morning ☀️':h<17?'Good Afternoon 🌤️':h<21?'Good Evening 🌙':'Good Night ✨';
-  const el=document.getElementById('home-greeting');
-  if(el) el.textContent=greet;
+  document.getElementById('home-greeting').textContent=greet;
   HOME_SECTIONS.forEach((sec,i)=>{ buildShimmerSection(sec); loadSection(sec,i*250); });
 }
 
-/* ── Playback Logic ── */
+/* ── Playback ── */
 function setActive(el){
   if(activeEl) activeEl.classList.remove('playing');
   activeEl=el; if(el) el.classList.add('playing');
@@ -858,113 +655,165 @@ function playFromRow(item,rowEl,idx){
   setActive(rowEl); currentIdx=idx; queueEl=resultsEl; playItem(item);
 }
 
-async function playItem(item) {
-  // 1. INSTANT UI UPDATE
-  currentItem = item;
-  updateMediaSession(item);
-  const {title, artist} = parseTitleArtist(item.title || '');
+async function playItem(item){
+  currentItem=item;
+  const {title,artist}=parseTitleArtist(item.title||'');
 
-  pThumb.src = item.thumbnail || '';
-  pTitle.textContent = title || item.title;
-  pArtist.textContent = artist;
-  
-  if(npSongTitle) npSongTitle.textContent = title || item.title;
-  if(npSongArtist) npSongArtist.textContent = artist;
-  if(npArtCover) npArtCover.src = item.thumbnail || '';
-  if(npBgImg) npBgImg.src = item.thumbnail || '';
-
-  // Open the player immediately
+  // Instant UI update
+  pThumb.src=item.thumbnail||'';
+  pTitle.textContent=title||item.title;
+  pArtist.textContent=artist;
+  npSongTitle.textContent=title||item.title;
+  npSongArtist.textContent=artist;
+  npArtCover.src=item.thumbnail||'';
+  npBgImg.src=item.thumbnail||'';
   openNowPlaying();
-  showPauseAll();
+  updateMediaSession(item);
 
-  // 2. THE FIX: Bypass your backend's stream fetch
-  // We stop calling ${API}/stream because YouTube is blocking Render's IP.
-  // Instead, we let the YouTube IFrame handle the loading directly.
-  
-  if (ytPlayer && ytReady) {
-    // YouTube's IFrame API is much harder for them to block than your Render script
-    ytPlayer.loadVideoById({ videoId: item.videoId });
+  // Reset progress
+  progFill.style.width='0%'; npProgFill.style.width='0%';
+  tCur.textContent='0:00'; npTCur.textContent='0:00';
+  tTot.textContent='0:00'; npTTot.textContent='0:00';
+  duration=0;
+
+  if(videoMode){
+    // Stop audio, load YT video
+    bgAudio.pause();
+    stopLoop();
+    _loadYouTube(item.videoId);
   } else {
-    const t = setInterval(() => {
-      if (ytReady && ytPlayer) {
-        clearInterval(t);
-        ytPlayer.loadVideoById({ videoId: item.videoId });
-      }
-    }, 100);
+    // Stop YT, fetch audio stream
+    try{ ytPlayer?.pauseVideo(); }catch(_){}
+    videoLoadedId=null;
+    stopLoop();
+    await fetchAndPlayAudio(item);
+    showPauseAll();
   }
 }
-  
+
+function _loadYouTube(videoId){
+  if(!ytReady || !ytPlayer){
+    const t=setInterval(()=>{ if(ytReady&&ytPlayer){ clearInterval(t); _loadYouTube(videoId); } },100);
+    return;
+  }
+  videoLoadedId=videoId;
+  ytPlayer.loadVideoById({ videoId });
+  showPauseAll();
+}
+
 function playNext(){
-  if(currentIdx >= tracks.length-1) return;
+  if(currentIdx>=tracks.length-1) return;
   currentIdx++;
-  const item = tracks[currentIdx];
+  const item=tracks[currentIdx];
   if(queueEl){ const el=queueEl.children[currentIdx]; setActive(el||null); if(el) el.scrollIntoView({behavior:'smooth',block:'nearest'}); }
   playItem(item);
 }
 function playPrev(){
-  if(currentIdx <= 0) return;
+  if(currentIdx<=0) return;
   currentIdx--;
-  const item = tracks[currentIdx];
+  const item=tracks[currentIdx];
   if(queueEl){ const el=queueEl.children[currentIdx]; setActive(el||null); if(el) el.scrollIntoView({behavior:'smooth',block:'nearest'}); }
   playItem(item);
 }
 
-/* ── Video / audio mode override ── */
-function setVideoMode(on){
-  videoMode = on;
-  const ytFrame = document.getElementById('yt-player-frame');
-  const customControls = document.querySelector('.np-bottom');
-  const customFsBtn = document.getElementById('np-fs-btn');
+/* ── Video ↔ Audio mode switch (smooth, position-preserving) ── */
+async function setVideoMode(on){
+  if(videoMode===on) return;
+  videoMode=on;
 
   if(on){
+    // ── Switching TO Video ──
+    const pos=bgAudio.currentTime||0;
+    bgAudio.pause();
+    stopLoop();
+
+    // Show YT frame, hide album art
     npArtWrap.classList.add('video-mode');
     vidLabel.textContent='Switch to Audio';
     vidIconVideo.style.display='none'; vidIconAudio.style.display='';
     vidToggleBtn.classList.add('on');
-    
-    ytFrame.style.pointerEvents = 'auto'; // Remove shield
-    customControls.style.display = 'none'; // Hide Apple UI controls
-    customFsBtn.style.display = 'none'; 
+    document.querySelector('.np-bottom').style.display='none';
+    document.getElementById('np-fs-btn').style.display='none';
+
+    if(currentItem){
+      if(videoLoadedId===currentItem.videoId && ytPlayer){
+        // Already loaded — seek and resume
+        ytPlayer.seekTo(pos,true);
+        ytPlayer.playVideo();
+      } else {
+        _loadYouTube(currentItem.videoId);
+        // After YT starts playing, seek to audio position
+        if(pos>2){
+          let sought=false;
+          const seekInterval=setInterval(()=>{
+            if(ytPlayer?.getPlayerState?.()===1&&!sought){
+              sought=true; clearInterval(seekInterval);
+              ytPlayer.seekTo(pos,true);
+            }
+          },300);
+        }
+      }
+    }
   } else {
+    // ── Switching BACK to Audio ──
+    let pos=0;
+    try{ pos=ytPlayer?.getCurrentTime()||0; }catch(_){}
+    try{ ytPlayer?.pauseVideo(); }catch(_){}
+    stopLoop();
+
+    // Show album art, hide YT frame
     npArtWrap.classList.remove('video-mode');
     vidLabel.textContent='Switch to Video';
     vidIconVideo.style.display=''; vidIconAudio.style.display='none';
     vidToggleBtn.classList.remove('on');
-    
-    ytFrame.style.pointerEvents = 'none'; // Put shield back
-    customControls.style.display = 'flex'; // Restore Apple UI
-    customFsBtn.style.display = 'flex'; 
+    document.querySelector('.np-bottom').style.display='flex';
+    document.getElementById('np-fs-btn').style.display='flex';
+
+    if(currentItem){
+      if(audioLoadedId===currentItem.videoId && bgAudio.src){
+        // Audio still loaded — seek and resume
+        bgAudio.currentTime=pos;
+        await bgAudio.play();
+        showPauseAll();
+      } else {
+        // Re-fetch (URL expired after ~6hrs)
+        await fetchAndPlayAudio(currentItem, pos);
+        showPauseAll();
+      }
+    }
   }
 }
 
-/* ── UI Panel Controls ── */
+/* ── Panel controls ── */
 function openNowPlaying(){ panelOpen=true; npOverlay.classList.add('open'); }
 function closeNowPlaying(){ panelOpen=false; npOverlay.classList.remove('open'); }
 
-ppBtn.addEventListener('click',e=>{ e.stopPropagation(); if(!ytPlayer) return; isPlaying?ytPlayer.pauseVideo():ytPlayer.playVideo(); });
-npPpBtn.addEventListener('click',e=>{ e.stopPropagation(); if(!ytPlayer) return; isPlaying?ytPlayer.pauseVideo():ytPlayer.playVideo(); });
+ppBtn.addEventListener('click',e=>{ e.stopPropagation(); togglePlayPause(); });
+npPpBtn.addEventListener('click',e=>{ e.stopPropagation(); togglePlayPause(); });
 nextBtn.addEventListener('click',e=>{ e.stopPropagation(); playNext(); });
 prevBtn.addEventListener('click',e=>{ e.stopPropagation(); playPrev(); });
 npNextBtn.addEventListener('click',e=>{ e.stopPropagation(); playNext(); });
 npPrevBtn.addEventListener('click',e=>{ e.stopPropagation(); playPrev(); });
 
 progBar.addEventListener('click',e=>{
-  if(!ytPlayer||!duration) return;
-  const r=progBar.getBoundingClientRect();
-  ytPlayer.seekTo(((e.clientX-r.left)/r.width)*duration,true);
+  const r=progBar.getBoundingClientRect(), pct=(e.clientX-r.left)/r.width;
+  if(videoMode){ if(ytPlayer&&duration) ytPlayer.seekTo(pct*duration,true); }
+  else { if(bgAudio.duration) bgAudio.currentTime=pct*bgAudio.duration; }
 });
 npProgBar.addEventListener('click',e=>{
-  if(!ytPlayer||!duration) return;
-  const r=npProgBar.getBoundingClientRect();
-  ytPlayer.seekTo(((e.clientX-r.left)/r.width)*duration,true);
+  const r=npProgBar.getBoundingClientRect(), pct=(e.clientX-r.left)/r.width;
+  if(videoMode){ if(ytPlayer&&duration) ytPlayer.seekTo(pct*duration,true); }
+  else { if(bgAudio.duration) bgAudio.currentTime=pct*bgAudio.duration; }
 });
-
 volBar.addEventListener('click',e=>{
   const r=volBar.getBoundingClientRect();
   currentVolume=Math.round(Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*100);
   volFill.style.width=currentVolume+'%';
+  bgAudio.volume=currentVolume/100;
   if(ytPlayer?.setVolume) ytPlayer.setVolume(currentVolume);
 });
+
+vidToggleBtn.addEventListener('click',e=>{ e.stopPropagation(); setVideoMode(!videoMode); });
 
 playerBar.addEventListener('click',e=>{
   if(e.target.closest('button,.prog-bar,.vol-bar')) return;
@@ -977,48 +826,32 @@ let _nsy=0;
 document.querySelector('.np-panel').addEventListener('touchstart',e=>{_nsy=e.touches[0].clientY;},{passive:true});
 document.querySelector('.np-panel').addEventListener('touchend',e=>{if(e.changedTouches[0].clientY-_nsy>60&&!isFullscreen)closeNowPlaying();},{passive:true});
 
-vidToggleBtn.addEventListener('click',e=>{ e.stopPropagation(); setVideoMode(!videoMode); });
-
-/* ── Fullscreen Toggle ── */
-const npFsBtn = document.getElementById('np-fs-btn');
-let isFullscreen = false;
-
+/* ── Fullscreen ── */
+let isFullscreen=false;
+const npFsBtn=document.getElementById('np-fs-btn');
 function toggleFullscreen(){
-  isFullscreen = !isFullscreen;
-  npOverlay.classList.toggle('fullscreen', isFullscreen);
+  isFullscreen=!isFullscreen;
+  npOverlay.classList.toggle('fullscreen',isFullscreen);
   try{
-    if(isFullscreen){
-      const p = npOverlay.requestFullscreen?.() ?? npOverlay.webkitRequestFullscreen?.();
-      if(p?.catch) p.catch(()=>{});
-    } else {
-      const p = document.fullscreenElement ? document.exitFullscreen?.() : null;
-      if(p?.catch) p.catch(()=>{});
-    }
-  } catch(e){}
+    if(isFullscreen){ const p=npOverlay.requestFullscreen?.()??npOverlay.webkitRequestFullscreen?.(); if(p?.catch)p.catch(()=>{}); }
+    else { const p=document.fullscreenElement?document.exitFullscreen?.():null; if(p?.catch)p.catch(()=>{}); }
+  }catch(e){}
 }
-
 npFsBtn.addEventListener('click',e=>{ e.stopPropagation(); toggleFullscreen(); });
-document.addEventListener('fullscreenchange',()=>{
-  if(!document.fullscreenElement && isFullscreen){ isFullscreen=false; npOverlay.classList.remove('fullscreen'); }
-});
-
-npBackdrop.addEventListener('click', closeNowPlaying);
-npCloseBtn.addEventListener('click',()=>{ if(isFullscreen) toggleFullscreen(); else closeNowPlaying(); });
+document.addEventListener('fullscreenchange',()=>{ if(!document.fullscreenElement&&isFullscreen){ isFullscreen=false; npOverlay.classList.remove('fullscreen'); } });
+npBackdrop.addEventListener('click',closeNowPlaying);
+npCloseBtn.addEventListener('click',()=>{ if(isFullscreen)toggleFullscreen(); else closeNowPlaying(); });
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){
-    if(isFullscreen){ isFullscreen=false; npOverlay.classList.remove('fullscreen'); }
+    if(isFullscreen){isFullscreen=false;npOverlay.classList.remove('fullscreen');}
     else if(panelOpen) closeNowPlaying();
   }
 });
 
-/* ── Master Search (Supports Text and Playlist URLs) ── */
-async function search(q, pushState=true){
+/* ── Search ── */
+async function search(q,pushState=true){
   if(!q.trim()) return;
-  if(pushState){
-    const u=new URL(location.href);
-    u.searchParams.set('q',q);
-    history.pushState({q},'',u);
-  }
+  if(pushState){ const u=new URL(location.href); u.searchParams.set('q',q); history.pushState({q},'',u); }
   showSearch();
   document.getElementById('search-input').value=q;
   resultsEl.innerHTML='';
@@ -1026,51 +859,25 @@ async function search(q, pushState=true){
   statusEl.style.display='flex';
   secHeader.style.display='none';
   tracks=[]; currentIdx=-1; queueEl=resultsEl;
-  
   try{
-    let endpoint = '';
-    let displayTitle = '';
-
-    if (q.includes('list=')) {
-      let playlistId = '';
-      try {
-        const parsedUrl = new URL(q);
-        playlistId = parsedUrl.searchParams.get('list');
-      } catch(e) {
-        const match = q.match(/list=([a-zA-Z0-9_-]+)/);
-        if(match) playlistId = match[1];
-      }
-
-      if (playlistId) {
-        endpoint = `${API}/playlist?id=${playlistId}`;
-        displayTitle = `Loaded Playlist`;
-      } else {
-        endpoint = `${API}/search?q=${encodeURIComponent(q)}`;
-        displayTitle = `Results for "${q}"`;
-      }
+    let endpoint='',displayTitle='';
+    if(q.includes('list=')){
+      let pid='';
+      try{pid=new URL(q).searchParams.get('list');}catch(){const m=q.match(/list=([a-zA-Z0-9_-]+)/);if(m)pid=m[1];}
+      if(pid){endpoint=`${API}/playlist?id=${pid}`;displayTitle='Loaded Playlist';}
+      else{endpoint=`${API}/search?q=${encodeURIComponent(q)}`;displayTitle=`Results for "${q}"`;}
     } else {
-      endpoint = `${API}/search?q=${encodeURIComponent(q)}`;
-      displayTitle = `Results for "${q}"`;
+      endpoint=`${API}/search?q=${encodeURIComponent(q)}`;displayTitle=`Results for "${q}"`;
     }
-
     const res=await fetch(endpoint);
     const data=await res.json();
-    
     statusEl.style.display='none';
-    if(!data?.length){
-      statusEl.innerHTML='<div class="status-icon">🎵</div><div>No results found.</div>';
-      statusEl.style.display='flex'; return;
-    }
-    
-    tracks=data;
-    secHeader.style.display='';
-    secTitle.textContent = displayTitle;
-    
+    if(!data?.length){statusEl.innerHTML='<div class="status-icon">🎵</div><div>No results found.</div>';statusEl.style.display='flex';return;}
+    tracks=data; secHeader.style.display=''; secTitle.textContent=displayTitle;
     data.forEach((item,i)=>{
       const {title,artist}=parseTitleArtist(item.title||'');
       const row=document.createElement('div');
-      row.className='trow';
-      row.style.animationDelay=`${i*0.028}s`;
+      row.className='trow'; row.style.animationDelay=`${i*0.028}s`;
       row.innerHTML=`
         <div class="tnum"><span class="n">${i+1}</span><span class="pb">▶</span></div>
         <img class="tthumb" src="${item.thumbnail||''}" onerror="this.style.opacity=0" alt=""/>
@@ -1082,73 +889,46 @@ async function search(q, pushState=true){
       row.addEventListener('click',()=>{ tracks=data; playFromRow(item,row,i); });
       resultsEl.appendChild(row);
     });
-  }catch{
+  } catch {
     statusEl.innerHTML='<div class="status-icon">⚠️</div><div>Connection error. Please try again.</div>';
     statusEl.style.display='flex';
   }
 }
-
 document.getElementById('search-input').addEventListener('keydown',e=>{
-  if(e.key==='Enter'){ const q=e.target.value.trim(); if(q) search(q); }
+  if(e.key==='Enter'){const q=e.target.value.trim();if(q)search(q);}
 });
-
 window.addEventListener('popstate',e=>{
   const q=e.state?.q||new URL(location.href).searchParams.get('q');
-  if(q) search(q,false);
-  else{ showHome(); history.replaceState(null,'',location.pathname); }
+  if(q)search(q,false); else{showHome();history.replaceState(null,'',location.pathname);}
 });
+(()=>{ const q=new URL(location.href).searchParams.get('q'); if(q)search(q,false); else initHome(); })();
 
-(()=>{
-  const q=new URL(location.href).searchParams.get('q');
-  if(q) search(q,false);
-  else initHome();
-})();
-/* ── 1:00 AM Daily Refresh ── */
-function setupDailyRefresh() {
-  // Check the time every 1 minute so it triggers exactly at 1:00 AM
-  setInterval(() => {
-    const now = new Date();
-    
-    // Check if the current time is 1:00 AM (or later)
-    if (now.getHours() >= 1) {
-      // Get today's date as a string (e.g., "Wed Oct 25 2024")
-      const todayStr = now.toDateString();
-      const lastRefreshDate = localStorage.getItem('last_refresh_date');
-
-      // If we haven't refreshed yet TODAY, do it now!
-      if (lastRefreshDate !== todayStr) {
-        // Save today's date so it doesn't trigger again until tomorrow
-        localStorage.setItem('last_refresh_date', todayStr);
-        
-        // Silently fetch today's new trending songs
-        initHome(); 
-      }
-    }
-  }, 60000); // 60000 ms = 1 minute
-}
-
-// Start the tracker
-setupDailyRefresh();
-  
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('/sw.js').catch(()=>{});
-}
-
-// ── MEDIA SESSION (Background Audio) ──
-function updateMediaSession(item) {
-  if (!('mediaSession' in navigator)) return;
-  const { title, artist } = parseTitleArtist(item.title || '');
-  navigator.mediaSession.metadata = new MediaMetadata({
-    title: title || item.title,
-    artist: artist || 'Raaga',
-    artwork: [{ src: item.thumbnail, sizes: '512x512', type: 'image/jpeg' }]
+/* ── Media Session (lock screen controls) ── */
+function updateMediaSession(item){
+  if(!('mediaSession' in navigator)) return;
+  const {title,artist}=parseTitleArtist(item.title||'');
+  navigator.mediaSession.metadata=new MediaMetadata({
+    title:title||item.title, artist:artist||'Raaga',
+    artwork:[{src:item.thumbnail,sizes:'512x512',type:'image/jpeg'}]
   });
-  navigator.mediaSession.setActionHandler('play', () => ytPlayer?.playVideo());
-  navigator.mediaSession.setActionHandler('pause', () => ytPlayer?.pauseVideo());
-  navigator.mediaSession.setActionHandler('nexttrack', () => playNext());
-  navigator.mediaSession.setActionHandler('previoustrack', () => playPrev());
+  navigator.mediaSession.setActionHandler('play',          ()=>bgAudio.play());
+  navigator.mediaSession.setActionHandler('pause',         ()=>bgAudio.pause());
+  navigator.mediaSession.setActionHandler('nexttrack',     ()=>playNext());
+  navigator.mediaSession.setActionHandler('previoustrack', ()=>playPrev());
 }
-  
+
+/* ── Daily refresh at 1AM ── */
+setInterval(()=>{
+  const now=new Date();
+  if(now.getHours()>=1){
+    const today=now.toDateString();
+    if(localStorage.getItem('last_refresh_date')!==today){
+      localStorage.setItem('last_refresh_date',today); initHome();
+    }
+  }
+},60000);
+
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').catch(()=>{}); }
 </script>
 </body>
 </html>
