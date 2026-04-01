@@ -341,75 +341,83 @@ nav{display:flex; flex-direction:column; gap:4px}
   .sidebar{display:none}
   .main{grid-row:1; grid-column:1;}
 
-  /* Player bar — taller, mini progress strip on top */
+  /* ── Player bar ── */
   .player{
     grid-row:2; grid-column:1; background:var(--glass-bg); padding:0 16px;
-    border-top:1px solid var(--glass-border); border-bottom:1px solid rgba(0,0,0,0.5);
-    position:relative; overflow:hidden;
+    border-top:1px solid var(--glass-border); position:relative; overflow:hidden;
   }
-  /* Red mini progress strip at very top of player */
-  .player::after{
+  /* Red mini progress line at top of player */
+  .player::before{
     content:''; position:absolute; top:0; left:0; height:2px;
-    width:var(--mob-prog, 0%); background:var(--accent);
-    transition:width .5s linear; pointer-events:none;
+    width:var(--mob-prog,0%); background:var(--accent); pointer-events:none;
+    transition:width .5s linear; z-index:10;
   }
   .p-center{display:none}
   .p-left{flex:1; width:auto}
   .p-right{width:auto; display:flex; padding-right:4px;}
   .p-right .vol-wrap{display:none}
   .cbtn.shuffle,.cbtn.prev,.cbtn.repeat{display:none}
-  #p-thumb{width:46px; height:46px; border-radius:8px;}
-  /* Show the mobile play/pause button */
+  #p-thumb{width:48px; height:48px; border-radius:8px}
   #mob-pp-btn{display:flex !important}
 
-  /* Bottom nav */
+  /* ── Bottom nav — HORIZONTAL, two equal columns ── */
   .mob-nav{
-    display:flex; grid-row:3; grid-column:1; align-items:stretch;
+    display:flex; flex-direction:row; grid-row:3; grid-column:1;
     background:var(--glass-bg);
     backdrop-filter:saturate(180%) blur(24px); -webkit-backdrop-filter:saturate(180%) blur(24px);
     border-top:1px solid var(--glass-border);
   }
   .mnbtn{
-    flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
+    flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
     background:none; border:none; color:var(--text-muted); font-family:'Plus Jakarta Sans',sans-serif;
-    font-size:.65rem; font-weight:600; cursor:pointer; transition:color .2s;
+    font-size:.65rem; font-weight:600; cursor:pointer; transition:color .2s; padding:6px 0;
   }
-  .mnbtn.active{color:var(--accent)}.mnbtn svg{width:24px; height:24px; fill:currentColor}
+  .mnbtn.active{color:var(--accent)}
+  .mnbtn svg{width:22px; height:22px; fill:currentColor}
 
-  /* Home layout */
+  /* ── Home ── */
   .home-hero{padding:1.2rem 1rem 0.6rem}
   .home-greeting{font-size:1.7rem}
   .home-body{padding:.5rem 1rem 2rem}
   .sec-head{border-bottom:none; padding-bottom:0; margin-bottom:.6rem}
   .sec-title{font-size:1rem}
 
-  /* ── 2-column card grid ── */
+  /* ── 2-column grid: use flex-wrap (more reliable than grid override) ── */
   .sec-scroll{
-    display:grid !important;
-    grid-template-columns:repeat(2, 1fr) !important;
+    display:flex !important;
+    flex-wrap:wrap !important;
+    overflow-x:visible !important;
     gap:10px !important;
-    overflow-x:unset !important;
     padding-bottom:4px;
   }
-  /* Cards: auto width, square art via aspect-ratio */
-  .mcard{width:auto !important; flex-shrink:unset}
-  .mcard-art{width:100% !important; height:auto !important; aspect-ratio:1/1}
-  /* Always show play button (no hover on mobile) */
-  .mcard .mcard-overlay{opacity:1; transform:scale(1)}
+  /* Each card = exactly half width minus half the gap */
+  .mcard{
+    width:calc(50% - 5px) !important;
+    flex-shrink:0 !important;
+  }
+  .mcard-art{
+    width:100% !important;
+    height:0 !important;
+    padding-bottom:100% !important; /* padding-bottom trick = square */
+    position:relative !important;
+  }
+  .mcard-img{
+    position:absolute !important;
+    inset:0 !important;
+    width:100% !important;
+    height:100% !important;
+  }
+  /* Always show play overlay (no hover on mobile) */
+  .mcard .mcard-overlay{opacity:1 !important; transform:scale(1) !important}
 
-  /* Now Playing panel */
+  /* ── Now Playing ── */
   .np-panel{height:100%; max-height:none; padding-top:20px;}
   .np-art-wrap{max-height:42vh;}
   .np-song-title{font-size:1.4rem}
 
-  /* Search track rows — keep as proper list */
-  .trow{
-    display:grid !important;
-    grid-template-columns:44px 1fr auto !important;
-    align-items:center; gap:12px; padding:8px 4px;
-  }
+  /* ── Search rows: thumbnail left, info right ── */
+  .trow{grid-template-columns:48px 1fr auto !important; gap:12px; padding:8px 4px}
   .tnum{display:none !important}
-  .tthumb{width:44px; height:44px; border-radius:6px; flex-shrink:0}
 }
 
   /* --- High-Performance Smooth Animations --- */
@@ -758,7 +766,6 @@ function startLoop(){
     if(!duration) try{ duration=ytPlayer.getDuration(); updateTotLabel(); }catch(_){}
     const pct = duration > 0 ? (t/duration)*100 : 0;
     progFill.style.width = pct+'%'; npProgFill.style.width = pct+'%';
-    // Drive mobile mini progress strip via CSS variable on player element
     playerBar.style.setProperty('--mob-prog', pct+'%');
     const f = fmt(t);
     tCur.textContent = f; npTCur.textContent = f;
@@ -831,11 +838,10 @@ async function loadSection(sec, delay){
 
 function initHome(){
   document.getElementById('home-body').innerHTML='';
-  // Time-based greeting
-  const h = new Date().getHours();
-  const greet = h<5?'Late Night 🌙':h<12?'Good Morning ☀️':h<17?'Good Afternoon 🌤️':h<21?'Good Evening 🌙':'Good Night ✨';
-  const greetEl = document.getElementById('home-greeting');
-  if(greetEl) greetEl.textContent = greet;
+  const h=new Date().getHours();
+  const greet=h<5?'Late Night 🌙':h<12?'Good Morning ☀️':h<17?'Good Afternoon 🌤️':h<21?'Good Evening 🌙':'Good Night ✨';
+  const el=document.getElementById('home-greeting');
+  if(el) el.textContent=greet;
   HOME_SECTIONS.forEach((sec,i)=>{ buildShimmerSection(sec); loadSection(sec,i*250); });
 }
 
@@ -962,21 +968,14 @@ playerBar.addEventListener('click',e=>{
   if(e.target.closest('button,.prog-bar,.vol-bar')) return;
   if(currentItem) openNowPlaying();
 });
-
 /* Swipe up on player → open Now Playing */
-let _sy = 0;
-playerBar.addEventListener('touchstart',e=>{ _sy=e.touches[0].clientY; },{passive:true});
-playerBar.addEventListener('touchend',e=>{
-  if(_sy - e.changedTouches[0].clientY > 30 && currentItem) openNowPlaying();
-},{passive:true});
-
-/* Swipe down on Now Playing panel → close */
-let _nsy = 0;
-const _npPanel = document.querySelector('.np-panel');
-_npPanel.addEventListener('touchstart',e=>{ _nsy=e.touches[0].clientY; },{passive:true});
-_npPanel.addEventListener('touchend',e=>{
-  if(e.changedTouches[0].clientY - _nsy > 60 && !isFullscreen) closeNowPlaying();
-},{passive:true});
+let _sy=0;
+playerBar.addEventListener('touchstart',e=>{_sy=e.touches[0].clientY;},{passive:true});
+playerBar.addEventListener('touchend',e=>{if(_sy-e.changedTouches[0].clientY>30&&currentItem)openNowPlaying();},{passive:true});
+/* Swipe down on NP panel → close */
+let _nsy=0;
+document.querySelector('.np-panel').addEventListener('touchstart',e=>{_nsy=e.touches[0].clientY;},{passive:true});
+document.querySelector('.np-panel').addEventListener('touchend',e=>{if(e.changedTouches[0].clientY-_nsy>60&&!isFullscreen)closeNowPlaying();},{passive:true});
 
 vidToggleBtn.addEventListener('click',e=>{ e.stopPropagation(); setVideoMode(!videoMode); });
 
