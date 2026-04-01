@@ -212,9 +212,6 @@ nav{display:flex; flex-direction:column; gap:4px}
 .vol-fill{height:100%; background:var(--text-dim); border-radius:2px; width:70%}
 .vol-bar:hover .vol-fill{background:var(--text)}
 
-/* Mobile Progress Strip (hidden on desktop) */
-.mob-prog-strip{display:none}
-
 /* Mobile Bottom Nav */
 .mob-nav{display:none}
 
@@ -339,41 +336,37 @@ nav{display:flex; flex-direction:column; gap:4px}
 
 /* MOBILE (Bottom Tabs) */
 @media(max-width:640px){
-  :root{--player-h:80px}
+  :root{--player-h:76px}
   .app{grid-template-columns:1fr; grid-template-rows:1fr var(--player-h) 60px; padding:0; background:var(--bg)}
   .sidebar{display:none}
   .main{grid-row:1; grid-column:1;}
 
-  /* ── Player bar: taller, with mini progress strip ── */
+  /* Player bar — taller, mini progress strip on top */
   .player{
     grid-row:2; grid-column:1; background:var(--glass-bg); padding:0 16px;
     border-top:1px solid var(--glass-border); border-bottom:1px solid rgba(0,0,0,0.5);
     position:relative; overflow:hidden;
   }
-  .mob-prog-strip{
-    display:block; position:absolute; top:0; left:0; right:0; height:3px;
-    background:rgba(255,255,255,0.08); pointer-events:none;
+  /* Red mini progress strip at very top of player */
+  .player::after{
+    content:''; position:absolute; top:0; left:0; height:2px;
+    width:var(--mob-prog, 0%); background:var(--accent);
+    transition:width .5s linear; pointer-events:none;
   }
-  .mob-prog-fill{height:100%; background:var(--accent); width:0%; border-radius:0 2px 2px 0;}
-  /* Swipe-up hint drag handle */
-  .player::before{
-    content:''; position:absolute; top:6px; left:50%; transform:translateX(-50%);
-    width:32px; height:3px; background:rgba(255,255,255,0.15); border-radius:2px;
-  }
-
   .p-center{display:none}
-  .p-left{flex:1; width:auto; gap:12px}
-  .p-right{width:auto; display:flex; padding-right:4px; gap:8px;}
+  .p-left{flex:1; width:auto}
+  .p-right{width:auto; display:flex; padding-right:4px;}
   .p-right .vol-wrap{display:none}
-  .cbtn.shuffle, .cbtn.prev, .cbtn.repeat{display:none}
-  #p-thumb{width:50px; height:50px; border-radius:8px;}
-  #p-title{font-size:.92rem}
+  .cbtn.shuffle,.cbtn.prev,.cbtn.repeat{display:none}
+  #p-thumb{width:46px; height:46px; border-radius:8px;}
+  /* Show the mobile play/pause button */
   #mob-pp-btn{display:flex !important}
 
-  /* ── Mobile nav ── */
+  /* Bottom nav */
   .mob-nav{
     display:flex; grid-row:3; grid-column:1; align-items:stretch;
-    background:var(--glass-bg); backdrop-filter:saturate(180%) blur(24px); -webkit-backdrop-filter:saturate(180%) blur(24px);
+    background:var(--glass-bg);
+    backdrop-filter:saturate(180%) blur(24px); -webkit-backdrop-filter:saturate(180%) blur(24px);
     border-top:1px solid var(--glass-border);
   }
   .mnbtn{
@@ -383,41 +376,40 @@ nav{display:flex; flex-direction:column; gap:4px}
   }
   .mnbtn.active{color:var(--accent)}.mnbtn svg{width:24px; height:24px; fill:currentColor}
 
-  /* ── Home layout ── */
-  .home-hero{padding:1.2rem 1rem 0.5rem}
-  .home-greeting{font-size:1.6rem; letter-spacing:-0.03em}
-  .home-sub{font-size:.85rem}
+  /* Home layout */
+  .home-hero{padding:1.2rem 1rem 0.6rem}
+  .home-greeting{font-size:1.7rem}
   .home-body{padding:.5rem 1rem 2rem}
-  .sec-title{font-size:1rem; font-weight:700}
+  .sec-head{border-bottom:none; padding-bottom:0; margin-bottom:.6rem}
+  .sec-title{font-size:1rem}
 
-  /* Remove border from section headers — saves space, looks cleaner */
-  .sec-head{border-bottom:none; padding-bottom:2px; margin-bottom:.7rem}
-
-  /* ── 2-column card grid on mobile instead of horizontal scroll ── */
+  /* ── 2-column card grid ── */
   .sec-scroll{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:12px;
-    overflow-x:unset;
+    display:grid !important;
+    grid-template-columns:repeat(2, 1fr) !important;
+    gap:10px !important;
+    overflow-x:unset !important;
     padding-bottom:4px;
-    -webkit-overflow-scrolling:unset;
   }
-  .mcard{width:auto; flex-shrink:unset}
-  .mcard-art{width:100%; height:auto; aspect-ratio:1/1}
-  /* Always show play overlay on mobile (no hover) */
+  /* Cards: auto width, square art via aspect-ratio */
+  .mcard{width:auto !important; flex-shrink:unset}
+  .mcard-art{width:100% !important; height:auto !important; aspect-ratio:1/1}
+  /* Always show play button (no hover on mobile) */
   .mcard .mcard-overlay{opacity:1; transform:scale(1)}
 
-  /* ── Now Playing panel on mobile: full-height sheet ── */
-  .np-panel{height:100%; max-height:none; padding-top:env(safe-area-inset-top,20px)}
-  .np-art-wrap{max-height:42vh; margin-top:50px}
+  /* Now Playing panel */
+  .np-panel{height:100%; max-height:none; padding-top:20px;}
+  .np-art-wrap{max-height:42vh;}
   .np-song-title{font-size:1.4rem}
-  .np-song-artist{font-size:1rem}
 
-  /* ── Track rows ── */
-  .trow{grid-template-columns:0 48px 1fr auto; gap:12px; padding:8px 4px}.tnum{display:none}
-
-  /* ── Search ── */
-  .search-wrap{padding:1.5rem 1rem 2rem}
+  /* Search track rows — keep as proper list */
+  .trow{
+    display:grid !important;
+    grid-template-columns:44px 1fr auto !important;
+    align-items:center; gap:12px; padding:8px 4px;
+  }
+  .tnum{display:none !important}
+  .tthumb{width:44px; height:44px; border-radius:6px; flex-shrink:0}
 }
 
   /* --- High-Performance Smooth Animations --- */
@@ -510,8 +502,6 @@ nav{display:flex; flex-direction:column; gap:4px}
   </nav>
 
   <div class="player" id="player-bar">
-    <!-- Mobile mini progress strip (visible on mobile only) -->
-    <div class="mob-prog-strip"><div class="mob-prog-fill" id="mob-prog-fill"></div></div>
     <div class="p-left">
       <img id="p-thumb" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E" alt=""/>
       <div class="p-meta">
@@ -660,7 +650,6 @@ const prevBtn      = document.getElementById('prev-btn');
 const volBar       = document.getElementById('vol-bar');
 const volFill      = document.getElementById('vol-fill');
 const playerBar    = document.getElementById('player-bar');
-const mobProgFill  = document.getElementById('mob-prog-fill');
 const npOverlay    = document.getElementById('np-overlay');
 const npBackdrop   = document.getElementById('np-backdrop');
 const npBgImg      = document.getElementById('np-bg-img'); // New blurred background
@@ -769,7 +758,8 @@ function startLoop(){
     if(!duration) try{ duration=ytPlayer.getDuration(); updateTotLabel(); }catch(_){}
     const pct = duration > 0 ? (t/duration)*100 : 0;
     progFill.style.width = pct+'%'; npProgFill.style.width = pct+'%';
-    if(mobProgFill) mobProgFill.style.width = pct+'%';
+    // Drive mobile mini progress strip via CSS variable on player element
+    playerBar.style.setProperty('--mob-prog', pct+'%');
     const f = fmt(t);
     tCur.textContent = f; npTCur.textContent = f;
   }, 500);
@@ -839,20 +829,13 @@ async function loadSection(sec, delay){
   }
 }
 
-/* ── Greeting ── */
-function getGreeting(){
-  const h = new Date().getHours();
-  if(h < 5)  return 'Late Night 🌙';
-  if(h < 12) return 'Good Morning ☀️';
-  if(h < 17) return 'Good Afternoon 🌤️';
-  if(h < 21) return 'Good Evening 🌙';
-  return 'Good Night ✨';
-}
-
 function initHome(){
   document.getElementById('home-body').innerHTML='';
+  // Time-based greeting
+  const h = new Date().getHours();
+  const greet = h<5?'Late Night 🌙':h<12?'Good Morning ☀️':h<17?'Good Afternoon 🌤️':h<21?'Good Evening 🌙':'Good Night ✨';
   const greetEl = document.getElementById('home-greeting');
-  if(greetEl) greetEl.textContent = getGreeting();
+  if(greetEl) greetEl.textContent = greet;
   HOME_SECTIONS.forEach((sec,i)=>{ buildShimmerSection(sec); loadSection(sec,i*250); });
 }
 
@@ -980,15 +963,20 @@ playerBar.addEventListener('click',e=>{
   if(currentItem) openNowPlaying();
 });
 
-/* ── Swipe up on player bar → open Now Playing ── */
-let swipeTouchStartY = 0;
-playerBar.addEventListener('touchstart', e => {
-  swipeTouchStartY = e.touches[0].clientY;
-}, { passive: true });
-playerBar.addEventListener('touchend', e => {
-  const dy = swipeTouchStartY - e.changedTouches[0].clientY;
-  if(dy > 25 && currentItem) openNowPlaying();
-}, { passive: true });
+/* Swipe up on player → open Now Playing */
+let _sy = 0;
+playerBar.addEventListener('touchstart',e=>{ _sy=e.touches[0].clientY; },{passive:true});
+playerBar.addEventListener('touchend',e=>{
+  if(_sy - e.changedTouches[0].clientY > 30 && currentItem) openNowPlaying();
+},{passive:true});
+
+/* Swipe down on Now Playing panel → close */
+let _nsy = 0;
+const _npPanel = document.querySelector('.np-panel');
+_npPanel.addEventListener('touchstart',e=>{ _nsy=e.touches[0].clientY; },{passive:true});
+_npPanel.addEventListener('touchend',e=>{
+  if(e.changedTouches[0].clientY - _nsy > 60 && !isFullscreen) closeNowPlaying();
+},{passive:true});
 
 vidToggleBtn.addEventListener('click',e=>{ e.stopPropagation(); setVideoMode(!videoMode); });
 
@@ -1017,17 +1005,6 @@ document.addEventListener('fullscreenchange',()=>{
 
 npBackdrop.addEventListener('click', closeNowPlaying);
 npCloseBtn.addEventListener('click',()=>{ if(isFullscreen) toggleFullscreen(); else closeNowPlaying(); });
-
-/* ── Swipe down on NP panel → close (mobile) ── */
-let npSwipeStartY = 0;
-const npPanel = document.querySelector('.np-panel');
-npPanel.addEventListener('touchstart', e => {
-  npSwipeStartY = e.touches[0].clientY;
-}, { passive: true });
-npPanel.addEventListener('touchend', e => {
-  const dy = e.changedTouches[0].clientY - npSwipeStartY;
-  if(dy > 60 && !isFullscreen) closeNowPlaying();
-}, { passive: true });
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){
     if(isFullscreen){ isFullscreen=false; npOverlay.classList.remove('fullscreen'); }
