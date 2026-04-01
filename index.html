@@ -3,314 +3,495 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-<title>Raaga — Music Player</title>
+<title>Raaga — Apple Music Edition</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+/* ── APPLE MUSIC COLOR PALETTE ── */
 :root{
-  --bg:#0a0a0a;--surface:#111;--card:#1a1a1a;--card-h:#252525;
-  --border:rgba(255,255,255,0.07);--green:#1ed760;
-  --text:#fff;--text-dim:#b3b3b3;--text-muted:#535353;
-  --player-h:88px;--nav-w:236px;--radius:10px;
+  --bg: #000000;
+  --surface: #1c1c1e;
+  --surface-hover: #2c2c2e;
+  --glass-bg: rgba(28, 28, 30, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --accent: #fa243c; /* Apple Music Red */
+  --accent-glow: rgba(250, 36, 60, 0.3);
+  --text: #ffffff;
+  --text-dim: #ebebf599; /* iOS secondary label */
+  --text-muted: #ebebf54d; /* iOS tertiary label */
+  --player-h: 84px;
+  --nav-w: 240px;
+  --radius: 12px;
 }
 html,body{height:100%}
-body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;overflow:hidden;user-select:none;-webkit-tap-highlight-color:transparent}
-.app{display:grid;grid-template-columns:var(--nav-w) 1fr;grid-template-rows:1fr var(--player-h);height:100vh;height:100dvh;gap:8px;padding:8px 8px 0;background:#000}
+body{
+  background:var(--bg); color:var(--text); 
+  font-family:'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow:hidden; user-select:none; -webkit-tap-highlight-color:transparent;
+}
+.app{
+  display:grid; grid-template-columns:var(--nav-w) 1fr; grid-template-rows:1fr var(--player-h); 
+  height:100vh; height:100dvh; background:var(--bg);
+}
 
-/* SIDEBAR */
-.sidebar{grid-row:1;grid-column:1;display:flex;flex-direction:column;gap:8px;overflow:hidden}
-.sidebar-top{background:var(--surface);border-radius:12px;padding:1.4rem 1.1rem 1.1rem;flex-shrink:0}
-.logo{display:flex;align-items:center;gap:10px;margin-bottom:1.6rem;text-decoration:none}
-.logo-icon{width:36px;height:36px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;box-shadow:0 0 16px rgba(30,215,96,0.35)}
-.logo-text{font-size:1.3rem;font-weight:800;letter-spacing:-0.04em;color:var(--text)}
-nav{display:flex;flex-direction:column;gap:2px}
-.nav-btn{display:flex;align-items:center;gap:14px;padding:9px 10px;border-radius:8px;cursor:pointer;color:var(--text-muted);font-size:.875rem;font-weight:700;transition:color .15s;background:none;border:none;width:100%;text-align:left;font-family:inherit}
-.nav-btn:hover{color:var(--text-dim)}.nav-btn.active{color:var(--text)}
-.nav-btn svg{width:22px;height:22px;fill:currentColor;flex-shrink:0}
-.sidebar-lib{background:var(--surface);border-radius:12px;padding:1.1rem;flex:1;overflow:hidden;display:flex;flex-direction:column}
-.lib-top{display:flex;align-items:center;gap:8px;margin-bottom:1rem;color:var(--text-muted);font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
-.lib-top svg{width:18px;height:18px;fill:currentColor}
-.lib-hint{font-size:.8rem;color:var(--text-muted);line-height:1.65}
+/* ── SIDEBAR (macOS Style) ── */
+.sidebar{
+  grid-row:1; grid-column:1; display:flex; flex-direction:column; gap:8px; 
+  padding: 24px 16px; background: #000000; border-right: 1px solid var(--glass-border);
+  z-index: 5;
+}
+.logo{display:flex; align-items:center; gap:12px; margin-bottom:2rem; padding: 0 8px; text-decoration:none}
+.logo-icon{
+  width:32px; height:32px; background:var(--accent); border-radius:8px; 
+  display:flex; align-items:center; justify-content:center; font-size:18px; 
+  flex-shrink:0; box-shadow: 0 4px 12px var(--accent-glow);
+}
+.logo-text{font-size:1.4rem; font-weight:800; letter-spacing:-0.03em; color:var(--text)}
 
-/* MAIN */
-.main{grid-row:1;grid-column:2;background:var(--surface);border-radius:12px;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.12) transparent;position:relative}
-.main::-webkit-scrollbar{width:5px}.main::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.12);border-radius:3px}
+nav{display:flex; flex-direction:column; gap:4px}
+.nav-btn{
+  display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:8px; 
+  cursor:pointer; color:var(--text-dim); font-size:.9rem; font-weight:600; 
+  transition:all .2s ease; background:transparent; border:none; width:100%; text-align:left; font-family:inherit;
+}
+.nav-btn:hover{color:var(--text); background: rgba(255,255,255,0.05)}
+.nav-btn.active{color:var(--accent); background: rgba(250, 36, 60, 0.1)}
+.nav-btn svg{width:20px; height:20px; fill:currentColor; flex-shrink:0}
+
+.sidebar-lib{margin-top:2rem; padding: 0 12px; flex:1; display:flex; flex-direction:column}
+.lib-top{
+  display:flex; align-items:center; gap:8px; margin-bottom:12px; color:var(--text-muted); 
+  font-size:.75rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase;
+}
+.lib-hint{font-size:.8rem; color:var(--text-muted); line-height:1.6}
+
+/* ── MAIN CONTENT ── */
+.main{
+  grid-row:1; grid-column:2; background:#000000; overflow-y:auto; overflow-x:hidden; 
+  scrollbar-width:none; position:relative; padding-bottom: 20px;
+}
+.main::-webkit-scrollbar{display:none} /* Clean Apple look */
 
 /* HOME */
-#view-home{animation:fadeIn .3s ease}
-.home-hero{padding:2rem 1.75rem 1.25rem;background:linear-gradient(180deg,rgba(30,215,96,0.2) 0%,transparent 100%)}
-.home-greeting{font-size:1.85rem;font-weight:800;letter-spacing:-0.035em;line-height:1.15;margin-bottom:6px}
-.home-sub{font-size:.875rem;color:var(--text-dim);font-weight:500}
-.home-body{padding:.75rem 1.75rem 2.5rem}
-.sec-block{margin-bottom:2.25rem}
-.sec-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1rem}
-.sec-title{font-size:1.2rem;font-weight:700;letter-spacing:-0.025em}
-.see-all{font-size:.72rem;font-weight:700;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;cursor:pointer;background:none;border:none;font-family:inherit;transition:color .15s;padding:0}
-.see-all:hover{color:var(--text)}
-.sec-scroll{display:flex;gap:14px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+#view-home{animation:fadeIn .4s cubic-bezier(0.2, 0.8, 0.2, 1)}
+.home-hero{padding: 3rem 2.5rem 1rem;}
+.home-greeting{font-size:2.2rem; font-weight:800; letter-spacing:-0.04em; line-height:1.15; margin-bottom:4px}
+.home-sub{font-size:1rem; color:var(--text-dim); font-weight:500}
+.home-body{padding: 1rem 2.5rem 4rem}
+
+.sec-block{margin-bottom:2.5rem}
+.sec-head{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:1.2rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 8px;}
+.sec-title{font-size:1.2rem; font-weight:700; letter-spacing:-0.02em}
+.see-all{
+  font-size:.8rem; font-weight:600; color:var(--accent); cursor:pointer; 
+  background:none; border:none; font-family:inherit; transition:opacity .15s; padding:0;
+}
+.see-all:hover{opacity:0.7}
+.sec-scroll{display:flex; gap:16px; overflow-x:auto; padding-bottom:10px; scrollbar-width:none; -webkit-overflow-scrolling:touch}
 .sec-scroll::-webkit-scrollbar{display:none}
 
-/* MUSIC CARD */
-.mcard{flex-shrink:0;width:156px;cursor:pointer}
-.mcard-art{position:relative;width:156px;height:156px;border-radius:var(--radius);overflow:hidden;background:var(--card);margin-bottom:10px;box-shadow:0 6px 20px rgba(0,0,0,.5);transition:box-shadow .25s}
-.mcard:hover .mcard-art{box-shadow:0 10px 28px rgba(0,0,0,.65)}
-.mcard-img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .35s ease}
-.mcard:hover .mcard-img{transform:scale(1.06)}
-.mcard-overlay{position:absolute;bottom:8px;right:8px;width:42px;height:42px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;opacity:0;transform:translateY(10px);transition:opacity .2s,transform .2s;box-shadow:0 4px 14px rgba(0,0,0,.5)}
-.mcard:hover .mcard-overlay,.mcard.playing .mcard-overlay{opacity:1;transform:translateY(0)}
-.mcard-overlay svg{fill:#000;width:18px;height:18px}
-.mcard-title{font-size:.84rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text);line-height:1.3}
-.mcard.playing .mcard-title{color:var(--green)}
-.mcard-artist{font-size:.74rem;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px}
+/* MUSIC CARD (Apple Style) */
+.mcard{flex-shrink:0; width:160px; cursor:pointer; transition:transform 0.2s ease;}
+.mcard:active{transform:scale(0.96)}
+.mcard-art{
+  position:relative; width:160px; height:160px; border-radius:var(--radius); overflow:hidden; 
+  background:var(--surface); margin-bottom:12px; border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4); transition:box-shadow .3s ease;
+}
+.mcard:hover .mcard-art{box-shadow: 0 12px 32px rgba(0,0,0,0.6)}
+.mcard-img{width:100%; height:100%; object-fit:cover; display:block; transition:transform .4s ease}
+.mcard:hover .mcard-img{transform:scale(1.04)}
+
+/* The Play Overlay */
+.mcard-overlay{
+  position:absolute; bottom:8px; right:8px; width:36px; height:36px; 
+  background:rgba(0,0,0,0.6); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  border-radius:50%; display:flex; align-items:center; justify-content:center; 
+  opacity:0; transform:scale(0.9); transition:all .2s ease;
+}
+.mcard:hover .mcard-overlay, .mcard.playing .mcard-overlay{opacity:1; transform:scale(1)}
+.mcard-overlay svg{fill:#fff; width:16px; height:16px; margin-left: 2px;}
+
+.mcard-title{font-size:.9rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--text);}
+.mcard.playing .mcard-title{color:var(--accent)}
+.mcard-artist{font-size:.8rem; color:var(--text-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px}
 
 /* SHIMMER */
-.shimmer-art{background:linear-gradient(90deg,var(--card) 25%,var(--card-h) 50%,var(--card) 75%);background-size:200% 100%;animation:shimmer 1.6s infinite}
-.shimmer-line{height:11px;border-radius:5px;margin-bottom:8px;background:linear-gradient(90deg,var(--card) 25%,var(--card-h) 50%,var(--card) 75%);background-size:200% 100%;animation:shimmer 1.6s infinite}
-.shimmer-line.w80{width:80%}.shimmer-line.w55{width:55%;height:9px}
-@keyframes shimmer{from{background-position:200% 0}to{background-position:-200% 0}}
+.shimmer-art{background:var(--surface); animation:pulse 1.5s infinite alternate}
+.shimmer-line{height:12px; border-radius:6px; margin-bottom:8px; background:var(--surface); animation:pulse 1.5s infinite alternate}
+.shimmer-line.w80{width:80%}.shimmer-line.w55{width:55%; height:10px}
+@keyframes pulse{from{opacity:0.6}to{opacity:1}}
 
-/* SEARCH */
-#view-search{animation:fadeIn .25s ease}
-.search-wrap{padding:1.5rem 1.75rem 2rem}
-.search-box{position:relative;max-width:420px;margin-bottom:1.75rem}
-.search-box input{width:100%;background:var(--card-h);border:none;border-radius:500px;padding:13px 18px 13px 50px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:.875rem;font-weight:500;outline:none;transition:background .2s,box-shadow .2s}
-.search-box input:focus{background:#2e2e2e;box-shadow:0 0 0 2px rgba(30,215,96,.4)}
+/* SEARCH (Apple Style) */
+#view-search{animation:fadeIn .3s ease}
+.search-wrap{padding:3rem 2.5rem 2rem}
+.search-box{position:relative; max-width:500px; margin-bottom:2rem}
+.search-box input{
+  width:100%; background:var(--surface); border:1px solid var(--glass-border); 
+  border-radius:12px; padding:16px 20px 16px 50px; color:var(--text); 
+  font-family:'Plus Jakarta Sans', sans-serif; font-size:1rem; font-weight:500; 
+  outline:none; transition:all .2s ease;
+}
+.search-box input:focus{background:#252527; border-color:rgba(255,255,255,0.2); box-shadow: 0 4px 20px rgba(0,0,0,0.3)}
 .search-box input::placeholder{color:var(--text-muted)}
-.s-icon{position:absolute;left:17px;top:50%;transform:translateY(-50%);color:var(--text-dim);pointer-events:none;width:18px;height:18px}
-.r-header{font-size:1.3rem;font-weight:700;letter-spacing:-0.025em;margin-bottom:1rem}
-#status{color:var(--text-dim);font-size:.875rem;padding:3.5rem 0;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px}
-.status-icon{font-size:2.5rem;opacity:.25}
-.results-list{display:flex;flex-direction:column}
+.s-icon{position:absolute; left:18px; top:50%; transform:translateY(-50%); color:var(--text-dim); pointer-events:none; width:20px; height:20px}
 
-/* TRACK ROWS */
-.trow{display:grid;grid-template-columns:34px 50px 1fr auto;align-items:center;gap:13px;padding:7px 10px;border-radius:6px;cursor:pointer;transition:background .13s;animation:fadeUp .22s ease both}
-.trow:hover{background:rgba(255,255,255,.06)}.trow.playing{background:rgba(30,215,96,.09)}
-.tnum{text-align:right;font-size:.82rem;color:var(--text-muted);font-variant-numeric:tabular-nums;position:relative}
-.tnum .n{transition:opacity .13s}.tnum .pb{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .13s;font-size:13px}
+.r-header{font-size:1.5rem; font-weight:700; letter-spacing:-0.02em; margin-bottom:1.5rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px;}
+#status{color:var(--text-dim); font-size:.9rem; padding:4rem 0; text-align:center; display:flex; flex-direction:column; align-items:center; gap:12px}
+.status-icon{font-size:3rem; opacity:.2}
+.results-list{display:flex; flex-direction:column; gap:4px}
+
+/* TRACK ROWS (List style) */
+.trow{
+  display:grid; grid-template-columns:36px 48px 1fr auto; align-items:center; gap:14px; 
+  padding:8px 12px; border-radius:8px; cursor:pointer; transition:background .15s; 
+  border-bottom: 1px solid transparent; animation:fadeUp .3s ease both;
+}
+.trow:hover{background:var(--surface)}
+.trow.playing{background: rgba(250, 36, 60, 0.08)}
+.tnum{text-align:right; font-size:.85rem; color:var(--text-muted); font-variant-numeric:tabular-nums; position:relative}
+.tnum .n{transition:opacity .15s}
+.tnum .pb{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity .15s; font-size:12px}
 .trow:hover .tnum .n{opacity:0}.trow:hover .tnum .pb{opacity:1}
-.trow.playing .tnum .n{opacity:0}.trow.playing .tnum .pb{opacity:1;color:var(--green)}
-.tthumb{width:50px;height:50px;border-radius:5px;object-fit:cover;background:var(--card);display:block}
+.trow.playing .tnum .n{opacity:0}.trow.playing .tnum .pb{opacity:1; color:var(--accent)}
+.tthumb{width:48px; height:48px; border-radius:6px; object-fit:cover; background:var(--surface); display:block; border: 1px solid var(--glass-border);}
 .tinfo{min-width:0}
-.ttitle{font-size:.875rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .13s}
-.trow.playing .ttitle{color:var(--green)}
-.tartist{font-size:.76rem;color:var(--text-dim);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.eq{display:none;align-items:flex-end;gap:2px;height:16px}
-.trow.playing .eq{display:flex}
-.eqb{width:3px;background:var(--green);border-radius:1px;animation:eqb .7s ease-in-out infinite alternate}
-.eqb:nth-child(1){height:35%;animation-delay:0s}.eqb:nth-child(2){height:100%;animation-delay:.12s}.eqb:nth-child(3){height:55%;animation-delay:.25s}
-@keyframes eqb{from{transform:scaleY(.2)}to{transform:scaleY(1)}}
+.ttitle{font-size:.95rem; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.trow.playing .ttitle{color:var(--accent)}
+.tartist{font-size:.8rem; color:var(--text-dim); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 
-/* BOTTOM PLAYER */
-.player{grid-row:2;grid-column:1/-1;background:#191919;border-top:1px solid var(--border);display:flex;align-items:center;padding:0 1.5rem;gap:1rem;height:var(--player-h);z-index:10;cursor:pointer}
-.p-left{display:flex;align-items:center;gap:13px;width:270px;flex-shrink:0}
-#p-thumb{width:56px;height:56px;border-radius:6px;object-fit:cover;background:var(--card);flex-shrink:0;display:block}
+/* Equalizer Animation */
+.eq{display:none; align-items:flex-end; gap:3px; height:16px}
+.trow.playing .eq{display:flex}
+.eqb{width:3px; background:var(--accent); border-radius:2px; animation:eqb .6s ease-in-out infinite alternate}
+.eqb:nth-child(1){height:40%; animation-delay:0s}.eqb:nth-child(2){height:100%; animation-delay:.15s}.eqb:nth-child(3){height:60%; animation-delay:.3s}
+@keyframes eqb{from{transform:scaleY(.3)}to{transform:scaleY(1)}}
+
+/* ── BOTTOM PLAYER (Floating Glass) ── */
+.player{
+  grid-row:2; grid-column:1/-1; background:var(--glass-bg); 
+  backdrop-filter: saturate(180%) blur(24px); -webkit-backdrop-filter: saturate(180%) blur(24px);
+  border-top:1px solid var(--glass-border); display:flex; align-items:center; 
+  padding:0 24px; gap:1rem; height:var(--player-h); z-index:100; cursor:pointer;
+}
+.p-left{display:flex; align-items:center; gap:14px; width:30%; min-width: 200px; flex-shrink:0}
+#p-thumb{width:48px; height:48px; border-radius:6px; object-fit:cover; background:var(--surface); border:1px solid var(--glass-border); display:block; box-shadow: 0 4px 10px rgba(0,0,0,0.3)}
 .p-meta{min-width:0}
-#p-title{font-size:.86rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
-#p-artist{font-size:.74rem;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.p-center{flex:1;display:flex;flex-direction:column;align-items:center;gap:7px}
-.p-ctrls{display:flex;align-items:center;gap:18px}
-.cbtn{background:none;border:none;color:var(--text-muted);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color .15s,transform .1s;padding:4px;border-radius:50%}
-.cbtn:hover{color:var(--text);transform:scale(1.1)}.cbtn svg{width:16px;height:16px;fill:currentColor}
-.cbtn.pp{width:34px;height:34px;background:var(--text);border-radius:50%;color:#000}
-.cbtn.pp:hover{background:#e0e0e0;transform:scale(1.06)}.cbtn.pp svg{width:17px;height:17px;fill:#000}
-.prog-wrap{display:flex;align-items:center;gap:9px;width:100%;max-width:540px}
-.tlabel{font-size:.68rem;color:var(--text-muted);font-variant-numeric:tabular-nums;flex-shrink:0;width:32px}
+#p-title{font-size:.9rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:2px}
+#p-artist{font-size:.75rem; color:var(--text-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+
+.p-center{flex:1; display:flex; flex-direction:column; align-items:center; justify-content: center; gap:8px}
+.p-ctrls{display:flex; align-items:center; gap:24px}
+.cbtn{
+  background:none; border:none; color:var(--text-dim); cursor:pointer; 
+  display:flex; align-items:center; justify-content:center; transition:all .15s; padding:4px;
+}
+.cbtn:hover{color:var(--text); transform:scale(1.05)}.cbtn svg{width:18px; height:18px; fill:currentColor}
+.cbtn.pp{width:40px; height:40px; background:var(--text); border-radius:50%; color:#000; box-shadow: 0 4px 12px rgba(255,255,255,0.1)}
+.cbtn.pp:hover{background:#e0e0e0; transform:scale(1.04)}.cbtn.pp svg{width:20px; height:20px; fill:#000; margin-left: 2px;}
+
+.prog-wrap{display:flex; align-items:center; gap:10px; width:100%; max-width:600px}
+.tlabel{font-size:.65rem; color:var(--text-dim); font-variant-numeric:tabular-nums; flex-shrink:0; width:36px; font-weight:500;}
 .tlabel.r{text-align:right}
-.prog-bar{flex:1;height:4px;background:rgba(255,255,255,.14);border-radius:2px;cursor:pointer;transition:height .12s;position:relative}
+.prog-bar{flex:1; height:4px; background:rgba(255,255,255,.1); border-radius:2px; cursor:pointer; transition:height .15s; position:relative}
 .prog-bar:hover{height:6px}
-.prog-fill{height:100%;background:var(--text-dim);border-radius:2px;width:0%;transition:background .15s;pointer-events:none}
-.prog-bar:hover .prog-fill{background:var(--green)}
-.prog-fill::after{content:'';position:absolute;right:-5px;top:50%;transform:translateY(-50%) scale(0);width:11px;height:11px;background:var(--text);border-radius:50%;transition:transform .13s}
+.prog-fill{height:100%; background:var(--text); border-radius:2px; width:0%; transition:background .15s; pointer-events:none; position:relative;}
+.prog-bar:hover .prog-fill{background:var(--accent)}
+.prog-fill::after{
+  content:''; position:absolute; right:-6px; top:50%; transform:translateY(-50%) scale(0); 
+  width:12px; height:12px; background:#fff; border-radius:50%; transition:transform .15s;
+  box-shadow: 0 0 4px rgba(0,0,0,0.5);
+}
 .prog-bar:hover .prog-fill::after{transform:translateY(-50%) scale(1)}
-.p-right{width:270px;flex-shrink:0;display:flex;align-items:center;justify-content:flex-end;gap:10px}
-.vol-wrap{display:flex;align-items:center;gap:7px}
-.vol-bar{width:88px;height:4px;background:rgba(255,255,255,.14);border-radius:2px;cursor:pointer;transition:height .12s}
+
+.p-right{width:30%; min-width:150px; flex-shrink:0; display:flex; align-items:center; justify-content:flex-end; gap:12px}
+.vol-wrap{display:flex; align-items:center; gap:8px}
+.vol-bar{width:90px; height:4px; background:rgba(255,255,255,.1); border-radius:2px; cursor:pointer; transition:height .15s}
 .vol-bar:hover{height:6px}
-.vol-fill{height:100%;background:var(--text-dim);border-radius:2px;width:70%;transition:background .15s}
-.vol-bar:hover .vol-fill{background:var(--green)}
+.vol-fill{height:100%; background:var(--text-dim); border-radius:2px; width:70%}
+.vol-bar:hover .vol-fill{background:var(--text)}
+
+/* Mobile Progress Strip (hidden on desktop) */
+.mob-prog-strip{display:none}
+
+/* Mobile Bottom Nav */
 .mob-nav{display:none}
 
-/* ── NOW PLAYING OVERLAY ── */
-.np-overlay{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .24s ease,visibility .24s ease}
-.np-overlay.open{opacity:1;visibility:visible;pointer-events:all}
-.np-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)}
+/* ── NOW PLAYING OVERLAY (Apple Music Style Fullscreen) ── */
+.np-overlay{
+  position:fixed; inset:0; z-index:2000; display:flex; align-items:center; justify-content:center; 
+  padding:20px; opacity:0; visibility:hidden; pointer-events:none; transition:all .4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.np-overlay.open{opacity:1; visibility:visible; pointer-events:all}
 
-/* ── PANEL ── */
+/* The Blurred Ambient Background */
+.np-backdrop{
+  position:absolute; inset:0; background:rgba(0,0,0,0.5); 
+  backdrop-filter:saturate(200%) blur(60px); -webkit-backdrop-filter:saturate(200%) blur(60px);
+}
+.np-backdrop-img{
+  position:absolute; inset:0; width:100%; height:100%; object-fit:cover; 
+  opacity:0.3; filter:blur(40px); transform:scale(1.1);
+}
+
 .np-panel{
-  position:relative;width:min(94vw,640px);background:#161616;
-  border:1px solid rgba(255,255,255,.1);border-radius:24px;
-  box-shadow:0 24px 80px rgba(0,0,0,.7);overflow:hidden;
-  display:flex;flex-direction:column;
-  transform:translateY(18px) scale(.98);
-  transition:transform .3s cubic-bezier(.32,.72,0,1),width .35s ease,height .35s ease,
-             border-radius .35s ease,top .35s ease,left .35s ease;
-  max-height:92vh;
+  position:relative; width:100%; max-width: 500px; /* Slimmer, phone-like proportions even on desktop */
+  background:transparent; display:flex; flex-direction:column;
+  transform:translateY(40px) scale(0.95); transition:all .4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  height: 90vh; max-height: 850px;
 }
 .np-overlay.open .np-panel{transform:translateY(0) scale(1)}
 
-/* ── FULLSCREEN ── */
-.np-overlay.fullscreen{padding:0;align-items:stretch;justify-content:stretch}
-.np-overlay.fullscreen .np-backdrop{display:none}
-.np-overlay.fullscreen .np-panel{width:100%;max-height:100%;height:100%;border-radius:0;border:none;background:#0a0a0a;display:grid;grid-template-rows:1fr auto}
-.np-overlay.fullscreen .np-art-wrap{margin:0;border-radius:0;aspect-ratio:unset;flex:1;height:100%}
-.np-overlay.fullscreen .np-head{display:none}
-.np-overlay.fullscreen .np-bottom{background:linear-gradient(to top,rgba(0,0,0,.95) 0%,rgba(0,0,0,.7) 100%);padding:20px 32px 28px}
-.np-overlay.fullscreen .np-info{padding:0 0 10px}
-.np-overlay.fullscreen .np-song-title{font-size:1.5rem}
-.np-overlay.fullscreen .np-prog-wrap{padding:0 0 4px}
-.np-overlay.fullscreen .np-ctrls{padding:12px 0 0}
-
 /* Header buttons */
-.np-close{position:absolute;top:14px;right:56px;width:34px;height:34px;border:none;border-radius:50%;background:rgba(255,255,255,.1);color:var(--text);cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center;transition:background .15s}
-.np-close:hover{background:rgba(255,255,255,.2)}.np-close svg{width:16px;height:16px;fill:currentColor}
-.np-fs-btn{position:absolute;top:14px;right:14px;width:34px;height:34px;border:none;border-radius:50%;background:rgba(255,255,255,.1);color:var(--text);cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center;transition:background .15s}
-.np-fs-btn:hover{background:rgba(255,255,255,.2)}.np-fs-btn svg{width:16px;height:16px;fill:currentColor}
+.np-close{
+  position:absolute; top:0; left:0; width:40px; height:40px; border:none; border-radius:50%; 
+  background:rgba(255,255,255,.1); color:var(--text); cursor:pointer; z-index:10; 
+  display:flex; align-items:center; justify-content:center; transition:background .2s; backdrop-filter:blur(10px);
+}
+.np-close:hover{background:rgba(255,255,255,.2)}.np-close svg{width:20px; height:20px; fill:currentColor; transform:rotate(-90deg)}
+
+.np-fs-btn{
+  position:absolute; top:0; right:0; width:40px; height:40px; border:none; border-radius:50%; 
+  background:rgba(255,255,255,.1); color:var(--text); cursor:pointer; z-index:10; 
+  display:flex; align-items:center; justify-content:center; transition:background .2s; backdrop-filter:blur(10px);
+}
+.np-fs-btn:hover{background:rgba(255,255,255,.2)}.np-fs-btn svg{width:18px; height:18px; fill:currentColor}
+
+/* Fullscreen state overrides */
+.np-overlay.fullscreen{padding:0}
+.np-overlay.fullscreen .np-panel{max-width:100%; height:100vh; max-height:100vh;}
+.np-overlay.fullscreen .np-art-wrap{margin-top:0; border-radius:0; height:100%; max-height:none;}
+.np-overlay.fullscreen .np-bottom{position:absolute; bottom:0; left:0; right:0; background:linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%); padding-bottom:40px;}
+.np-overlay.fullscreen .np-close{top: 20px; left: 20px;}
+.np-overlay.fullscreen .np-fs-btn{top: 20px; right: 20px;}
 .fs-expand{display:flex}.fs-compress{display:none}
 .np-overlay.fullscreen .fs-expand{display:none}.np-overlay.fullscreen .fs-compress{display:flex}
-.np-overlay.fullscreen .np-close{top:16px;right:62px;background:rgba(0,0,0,.5)}
-.np-overlay.fullscreen .np-fs-btn{top:16px;right:16px;background:rgba(0,0,0,.5)}
-.np-head{padding:18px 18px 0;display:flex;align-items:center;justify-content:space-between}
-.np-head-label{font-size:.72rem;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--text-dim)}
 
-/* ── ART AREA ── */
-.np-art-wrap{position:relative;margin:16px 18px 0;border-radius:16px;overflow:hidden;background:#000;box-shadow:0 18px 50px rgba(0,0,0,.6);aspect-ratio:16/9;transition:border-radius .35s ease,margin .35s ease}
+/* ── BIG ART AREA ── */
+.np-art-wrap{
+  position:relative; width:100%; aspect-ratio:1/1; max-height: 50vh; 
+  margin-top: 60px; border-radius:16px; overflow:hidden; background:#111; 
+  box-shadow: 0 30px 60px rgba(0,0,0,0.6); transition:all .4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+/* Video mode changes the aspect ratio */
+.np-art-wrap.video-mode { aspect-ratio: 16/9; margin-top: auto; margin-bottom: auto;}
 
-/* THIS SHIELD BLOCKS YOUTUBE CLICKS BY DEFAULT */
+/* THE INVISIBLE SHIELD */
 #yt-player-frame{
   position:absolute; inset:0; width:100%; height:100%; border:none; 
-  background:#000; display:block; z-index:1;
-  pointer-events: none; 
+  background:#000; display:block; z-index:1; pointer-events:none; 
 }
-
-#np-art-cover{position:absolute;inset:0;z-index:2;width:100%;height:100%;object-fit:cover;transition:opacity .35s ease;opacity:1;pointer-events:none}
+#np-art-cover{
+  position:absolute; inset:0; z-index:2; width:100%; height:100%; 
+  object-fit:cover; transition:opacity .4s ease; opacity:1; pointer-events:none;
+}
 .np-art-wrap.video-mode #np-art-cover{opacity:0}
 
-/* Pill buttons on art */
+/* Video Toggle Pill */
 .art-pill{
-  position:absolute;bottom:10px;z-index:5;
-  display:inline-flex;align-items:center;gap:6px;padding:7px 13px;
-  border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.72);color:#fff;
-  border-radius:999px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:inherit;
-  transition:background .15s,border-color .15s;backdrop-filter:blur(6px);
+  position:absolute; top:-40px; right:50px; z-index:10;
+  display:inline-flex; align-items:center; gap:6px; padding:8px 16px;
+  background:rgba(255,255,255,0.1); color:#fff; border:none;
+  border-radius:999px; font-size:.8rem; font-weight:600; cursor:pointer; font-family:inherit;
+  transition:all .2s; backdrop-filter:blur(10px);
 }
-.art-pill:hover{background:rgba(0,0,0,.92);border-color:rgba(255,255,255,.4)}
-.art-pill svg{width:13px;height:13px;fill:currentColor;flex-shrink:0}
-.art-pill.on{background:rgba(30,215,96,.18);border-color:rgba(30,215,96,.5);color:var(--green)}
-#vid-toggle-btn{right:10px}
+.art-pill:hover{background:rgba(255,255,255,0.2)}
+.art-pill svg{width:14px; height:14px; fill:currentColor; flex-shrink:0}
+.art-pill.on{background:var(--text); color:#000}
 
-/* Bottom section */
-.np-bottom{transition:background .35s ease,padding .35s ease}
-.np-info{padding:18px 22px 4px}
-.np-song-title{font-size:1.25rem;font-weight:800;letter-spacing:-0.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:font-size .2s}
-.np-song-artist{margin-top:4px;font-size:.9rem;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.np-prog-wrap{padding:10px 22px 0;display:flex;align-items:center;gap:9px}
-.np-prog-bar{flex:1;height:3px;background:rgba(255,255,255,.14);border-radius:2px;cursor:pointer;transition:height .12s}
-.np-prog-bar:hover{height:5px}
-.np-prog-fill{height:100%;background:var(--green);border-radius:2px;width:0%;pointer-events:none}
-.np-tlabel{font-size:.67rem;color:var(--text-muted);font-variant-numeric:tabular-nums;flex-shrink:0;width:30px}
-.np-tlabel.r{text-align:right}
-.np-ctrls{display:flex;align-items:center;justify-content:center;gap:22px;padding:14px 22px 22px}
-.np-cbtn{background:none;border:none;color:var(--text-muted);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color .15s,transform .1s;padding:4px;border-radius:50%}
-.np-cbtn:hover{color:var(--text);transform:scale(1.12)}.np-cbtn svg{width:18px;height:18px;fill:currentColor}
-.np-cbtn.pp{width:52px;height:52px;background:var(--text);border-radius:50%}
-.np-cbtn.pp:hover{background:#e0e0e0;transform:scale(1.05)}.np-cbtn.pp svg{width:24px;height:24px;fill:#000}
+/* Bottom Panel UI */
+.np-bottom{display:flex; flex-direction:column; justify-content:flex-end; flex:1; padding-bottom:20px; margin-top:30px;}
+.np-info{display:flex; flex-direction:column; align-items:flex-start; margin-bottom: 24px;}
+.np-song-title{font-size:1.6rem; font-weight:800; letter-spacing:-0.03em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%; text-align:left;}
+.np-song-artist{font-size:1.1rem; color:var(--text-dim); margin-top:4px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%; text-align:left;}
+
+.np-prog-wrap{display:flex; flex-direction:column; gap:8px; width:100%; margin-bottom: 30px;}
+.np-prog-bar{width:100%; height:6px; background:rgba(255,255,255,.15); border-radius:3px; cursor:pointer; position:relative;}
+.np-prog-fill{height:100%; background:var(--text); border-radius:3px; width:0%; pointer-events:none;}
+.np-times{display:flex; justify-content:space-between; width:100%;}
+.np-tlabel{font-size:.7rem; color:var(--text-dim); font-variant-numeric:tabular-nums; font-weight:600;}
+
+.np-ctrls{display:flex; align-items:center; justify-content:center; gap:40px; width:100%;}
+.np-cbtn{background:none; border:none; color:var(--text); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s;}
+.np-cbtn:hover{transform:scale(1.1); color:#fff}
+.np-cbtn svg{width:32px; height:32px; fill:currentColor}
+.np-cbtn.pp{width:72px; height:72px; background:var(--text); border-radius:50%; color:#000; box-shadow: 0 10px 30px rgba(255,255,255,0.2)}
+.np-cbtn.pp:hover{background:#e0e0e0; transform:scale(1.05)}.np-cbtn.pp svg{width:34px; height:34px; fill:#000; margin-left:4px}
 
 /* ANIMATIONS */
-@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeUp{from{opacity:0; transform:translateY(12px)}to{opacity:1; transform:translateY(0)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
 /* TABLET */
 @media(max-width:900px){
-  :root{--nav-w:68px}
-  .sidebar-top{padding:1.1rem .6rem}
-  .logo-text,.lib-top span:not(svg),.lib-hint,.nav-btn span{display:none}
-  .logo{justify-content:center;margin-bottom:1.1rem}
-  .nav-btn{justify-content:center;padding:10px 8px}
-  .sidebar-lib{padding:.6rem;align-items:center}.lib-top{justify-content:center}
-  .p-left,.p-right{width:auto}.p-right .vol-wrap{display:none}
-  #p-title,#p-artist{max-width:100px}.tlabel{display:none}
-  .home-hero{padding:1.5rem 1.25rem 1rem}.home-body{padding:.5rem 1.25rem 2rem}
-  .search-wrap{padding:1.25rem}
+  :root{--nav-w:72px}
+  .sidebar{padding: 24px 8px; align-items:center;}
+  .logo-text, .lib-top span:not(svg), .lib-hint, .nav-btn span{display:none}
+  .logo{justify-content:center; margin-bottom:2rem; padding:0;}
+  .nav-btn{justify-content:center; padding:12px}
+  .sidebar-lib{padding:0; margin-top:2rem; align-items:center}.lib-top{justify-content:center; margin-bottom:0}
+  .p-left{width:auto}.p-right{display:none} /* Hide volume on tablet */
+  #p-title, #p-artist{max-width:120px}.tlabel{display:none}
+  .home-hero{padding: 2rem 1.5rem 1rem}.home-body{padding: 1rem 1.5rem 2rem}
+  .search-wrap{padding:2rem 1.5rem}
 }
 
-/* MOBILE */
+/* MOBILE (Bottom Tabs) */
 @media(max-width:640px){
-  :root{--player-h:66px}
-  .app{grid-template-columns:1fr;grid-template-rows:1fr var(--player-h) 58px;padding:0;gap:0;background:var(--bg)}
+  :root{--player-h:80px}
+  .app{grid-template-columns:1fr; grid-template-rows:1fr var(--player-h) 60px; padding:0; background:var(--bg)}
   .sidebar{display:none}
-  .main{grid-row:1;grid-column:1;border-radius:0}
-  .player{grid-row:2;grid-column:1;border-radius:0;background:#1e1e1e;padding:0 1rem;height:var(--player-h)}
-  .p-center{display:none}.p-left{flex:1;width:auto}.p-right{width:auto;gap:14px}.p-right .vol-wrap{display:none}
-  .cbtn.shuffle,.cbtn.prev,.cbtn.next-btn,.cbtn.repeat{display:none}
-  #p-thumb{width:46px;height:46px}
-  .mob-nav{display:flex;grid-row:3;grid-column:1;background:#0e0e0e;border-top:1px solid var(--border);align-items:stretch}
-  .mnbtn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;color:var(--text-muted);font-family:'Plus Jakarta Sans',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.04em;cursor:pointer;padding:6px 0;transition:color .15s}
-  .mnbtn.active{color:var(--text)}.mnbtn svg{width:22px;height:22px;fill:currentColor;margin-bottom:1px}
-  .home-hero{padding:1.25rem 1rem .75rem}.home-greeting{font-size:1.5rem}
-  .home-body{padding:.5rem 1rem 1.5rem}.sec-title{font-size:1.05rem}
-  .mcard{width:128px}.mcard-art{width:128px;height:128px}
-  .np-overlay{align-items:flex-end;padding:8px}
-  .np-panel{width:100%;border-radius:20px 20px 0 0}
-  .np-overlay.fullscreen{padding:0;align-items:stretch}
-  .np-overlay.fullscreen .np-panel{border-radius:0}
-  .trow{grid-template-columns:0 46px 1fr auto;gap:10px;padding:7px 4px}.tnum{display:none}
-  .tthumb{width:46px;height:46px}
+  .main{grid-row:1; grid-column:1;}
+
+  /* ── Player bar: taller, with mini progress strip ── */
+  .player{
+    grid-row:2; grid-column:1; background:var(--glass-bg); padding:0 16px;
+    border-top:1px solid var(--glass-border); border-bottom:1px solid rgba(0,0,0,0.5);
+    position:relative; overflow:hidden;
+  }
+  .mob-prog-strip{
+    display:block; position:absolute; top:0; left:0; right:0; height:3px;
+    background:rgba(255,255,255,0.08); pointer-events:none;
+  }
+  .mob-prog-fill{height:100%; background:var(--accent); width:0%; border-radius:0 2px 2px 0;}
+  /* Swipe-up hint drag handle */
+  .player::before{
+    content:''; position:absolute; top:6px; left:50%; transform:translateX(-50%);
+    width:32px; height:3px; background:rgba(255,255,255,0.15); border-radius:2px;
+  }
+
+  .p-center{display:none}
+  .p-left{flex:1; width:auto; gap:12px}
+  .p-right{width:auto; display:flex; padding-right:4px; gap:8px;}
+  .p-right .vol-wrap{display:none}
+  .cbtn.shuffle, .cbtn.prev, .cbtn.repeat{display:none}
+  #p-thumb{width:50px; height:50px; border-radius:8px;}
+  #p-title{font-size:.92rem}
+  #mob-pp-btn{display:flex !important}
+
+  /* ── Mobile nav ── */
+  .mob-nav{
+    display:flex; grid-row:3; grid-column:1; align-items:stretch;
+    background:var(--glass-bg); backdrop-filter:saturate(180%) blur(24px); -webkit-backdrop-filter:saturate(180%) blur(24px);
+    border-top:1px solid var(--glass-border);
+  }
+  .mnbtn{
+    flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
+    background:none; border:none; color:var(--text-muted); font-family:'Plus Jakarta Sans',sans-serif;
+    font-size:.65rem; font-weight:600; cursor:pointer; transition:color .2s;
+  }
+  .mnbtn.active{color:var(--accent)}.mnbtn svg{width:24px; height:24px; fill:currentColor}
+
+  /* ── Home layout ── */
+  .home-hero{padding:1.2rem 1rem 0.5rem}
+  .home-greeting{font-size:1.6rem; letter-spacing:-0.03em}
+  .home-sub{font-size:.85rem}
+  .home-body{padding:.5rem 1rem 2rem}
+  .sec-title{font-size:1rem; font-weight:700}
+
+  /* Remove border from section headers — saves space, looks cleaner */
+  .sec-head{border-bottom:none; padding-bottom:2px; margin-bottom:.7rem}
+
+  /* ── 2-column card grid on mobile instead of horizontal scroll ── */
+  .sec-scroll{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    overflow-x:unset;
+    padding-bottom:4px;
+    -webkit-overflow-scrolling:unset;
+  }
+  .mcard{width:auto; flex-shrink:unset}
+  .mcard-art{width:100%; height:auto; aspect-ratio:1/1}
+  /* Always show play overlay on mobile (no hover) */
+  .mcard .mcard-overlay{opacity:1; transform:scale(1)}
+
+  /* ── Now Playing panel on mobile: full-height sheet ── */
+  .np-panel{height:100%; max-height:none; padding-top:env(safe-area-inset-top,20px)}
+  .np-art-wrap{max-height:42vh; margin-top:50px}
+  .np-song-title{font-size:1.4rem}
+  .np-song-artist{font-size:1rem}
+
+  /* ── Track rows ── */
+  .trow{grid-template-columns:0 48px 1fr auto; gap:12px; padding:8px 4px}.tnum{display:none}
+
+  /* ── Search ── */
+  .search-wrap{padding:1.5rem 1rem 2rem}
 }
+
+  /* --- High-Performance Smooth Animations --- */
+
+.np-overlay {
+  /* This makes the slide-up animation feel like a premium spring */
+  transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1) !important;
+}
+
+.mcard {
+  /* This prepares the card for the click animation */
+  transition: transform 0.2s ease !important;
+  cursor: pointer;
+}
+
+.mcard:active {
+  /* This makes the card shrink slightly when you touch it */
+  transform: scale(0.95) !important;
+}
+
+.np-backdrop {
+  /* This makes the background blur fade in instead of snapping */
+  transition: opacity 0.5s ease;
+}
+  
 </style>
 </head>
 <body>
 <div class="app">
 
   <aside class="sidebar">
-    <div class="sidebar-top">
-      <div class="logo">
-        <div class="logo-icon">♪</div>
-        <span class="logo-text">Raaga</span>
-      </div>
-      <nav>
-        <button class="nav-btn active" id="nav-home" onclick="showHome()">
-          <svg viewBox="0 0 24 24"><path d="M12.72 2.28a1 1 0 0 0-1.44 0l-9 9a1 1 0 0 0 1.44 1.44L4 12.41V21a1 1 0 0 0 1 1h5v-6h4v6h5a1 1 0 0 0 1-1v-8.59l.28.27a1 1 0 0 0 1.44-1.44z"/></svg>
-          <span>Home</span>
-        </button>
-        <button class="nav-btn" id="nav-search" onclick="showSearch()">
-          <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-          <span>Search</span>
-        </button>
-        <button class="nav-btn">
-          <svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
-          <span>Library</span>
-        </button>
-      </nav>
-    </div>
+    <a href="#" class="logo">
+      <div class="logo-icon">♪</div>
+      <span class="logo-text">Raaga</span>
+    </a>
+    <nav>
+      <button class="nav-btn active" id="nav-home" onclick="showHome()">
+        <svg viewBox="0 0 24 24"><path d="M12.72 2.28a1 1 0 0 0-1.44 0l-9 9a1 1 0 0 0 1.44 1.44L4 12.41V21a1 1 0 0 0 1 1h5v-6h4v6h5a1 1 0 0 0 1-1v-8.59l.28.27a1 1 0 0 0 1.44-1.44z"/></svg>
+        <span>Listen Now</span>
+      </button>
+      <button class="nav-btn" id="nav-search" onclick="showSearch()">
+        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <span>Search</span>
+      </button>
+    </nav>
     <div class="sidebar-lib">
       <div class="lib-top">
-        <svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
-        <span>Playlists</span>
+        <span>Library</span>
       </div>
-      <div class="lib-hint">Search songs to build your queue</div>
+      <div class="lib-hint">Search for songs to build your queue.</div>
     </div>
   </aside>
 
   <main class="main" id="main">
     <div id="view-home">
       <div class="home-hero">
-        <div class="home-greeting" id="home-greeting">Good evening 🌙</div>
-        <div class="home-sub">Discover what's trending in Bollywood &amp; beyond</div>
+        <div class="home-greeting" id="home-greeting">Browse</div>
+        <div class="home-sub">Top playlists and trending hits</div>
       </div>
       <div class="home-body" id="home-body"></div>
     </div>
+
     <div id="view-search" style="display:none">
       <div class="search-wrap">
         <div class="search-box">
           <svg class="s-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-          <input id="search-input" type="text" placeholder="Songs, artists, anything…" autocomplete="off"/>
+          <input id="search-input" type="text" placeholder="Artists, Songs, or Playlist Links…" autocomplete="off"/>
         </div>
         <div id="section-header" style="display:none">
           <div class="r-header" id="section-title">Results</div>
         </div>
         <div id="status">
-          <div class="status-icon">♫</div>
-          <div>Search for any song or artist to start listening</div>
+          <div class="status-icon">♪</div>
+          <div>Search for a track or paste a YouTube Playlist URL</div>
         </div>
         <div class="results-list" id="results"></div>
       </div>
@@ -320,24 +501,22 @@ nav{display:flex;flex-direction:column;gap:2px}
   <nav class="mob-nav">
     <button class="mnbtn active" id="mob-home" onclick="showHome()">
       <svg viewBox="0 0 24 24"><path d="M12.72 2.28a1 1 0 0 0-1.44 0l-9 9a1 1 0 0 0 1.44 1.44L4 12.41V21a1 1 0 0 0 1 1h5v-6h4v6h5a1 1 0 0 0 1-1v-8.59l.28.27a1 1 0 0 0 1.44-1.44z"/></svg>
-      Home
+      Listen Now
     </button>
     <button class="mnbtn" id="mob-search" onclick="showSearch()">
       <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
       Search
     </button>
-    <button class="mnbtn">
-      <svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
-      Library
-    </button>
   </nav>
 
   <div class="player" id="player-bar">
+    <!-- Mobile mini progress strip (visible on mobile only) -->
+    <div class="mob-prog-strip"><div class="mob-prog-fill" id="mob-prog-fill"></div></div>
     <div class="p-left">
       <img id="p-thumb" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E" alt=""/>
       <div class="p-meta">
-        <div id="p-title" style="color:var(--text-muted);font-size:.8rem;">Nothing playing</div>
-        <div id="p-artist"></div>
+        <div id="p-title">Not Playing</div>
+        <div id="p-artist">Select a track</div>
       </div>
     </div>
     <div class="p-center">
@@ -358,6 +537,9 @@ nav{display:flex;flex-direction:column;gap:2px}
       </div>
     </div>
     <div class="p-right">
+      <button class="cbtn pp" id="mob-pp-btn" style="display:none" onclick="event.stopPropagation(); if(ytPlayer){isPlaying?ytPlayer.pauseVideo():ytPlayer.playVideo()}">
+        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </button>
       <div class="vol-wrap">
         <button class="cbtn"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg></button>
         <div class="vol-bar" id="vol-bar"><div class="vol-fill" id="vol-fill"></div></div>
@@ -366,9 +548,10 @@ nav{display:flex;flex-direction:column;gap:2px}
   </div>
 
 </div><div class="np-overlay" id="np-overlay">
+  <img id="np-bg-img" class="np-backdrop-img" src=""/>
   <div class="np-backdrop" id="np-backdrop"></div>
+  
   <div class="np-panel">
-
     <button class="np-close" id="np-close-btn">
       <svg viewBox="0 0 24 24"><path d="M18.3 5.71 12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.3 19.71 2.89 18.3 9.18 12 2.89 5.71 4.3 4.29l6.29 6.3 6.3-6.3z"/></svg>
     </button>
@@ -377,32 +560,33 @@ nav{display:flex;flex-direction:column;gap:2px}
       <svg class="fs-compress" viewBox="0 0 24 24" style="display:none"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>
     </button>
 
-    <div class="np-head">
-      <span class="np-head-label">Now Playing</span>
-    </div>
-
     <div class="np-art-wrap" id="np-art-wrap">
       <div id="yt-player-frame"></div>
       <img id="np-art-cover" src="" alt=""/>
+    </div>
 
+    <div style="position:relative; width:100%; height:0; z-index: 10;">
       <button class="art-pill" id="vid-toggle-btn">
         <svg id="vid-icon-video" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
         <svg id="vid-icon-audio" viewBox="0 0 24 24" style="display:none"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
-        <span id="vid-label">Watch video</span>
+        <span id="vid-label">Switch to Video</span>
       </button>
-
-      </div>
+    </div>
 
     <div class="np-bottom">
       <div class="np-info">
         <div class="np-song-title" id="np-song-title">—</div>
         <div class="np-song-artist" id="np-song-artist"></div>
       </div>
+      
       <div class="np-prog-wrap">
-        <span class="np-tlabel" id="np-t-cur">0:00</span>
         <div class="np-prog-bar" id="np-prog-bar"><div class="np-prog-fill" id="np-prog-fill"></div></div>
-        <span class="np-tlabel r" id="np-t-tot">0:00</span>
+        <div class="np-times">
+          <span class="np-tlabel" id="np-t-cur">0:00</span>
+          <span class="np-tlabel r" id="np-t-tot">0:00</span>
+        </div>
       </div>
+
       <div class="np-ctrls">
         <button class="np-cbtn" id="np-prev-btn"><svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg></button>
         <button class="np-cbtn pp" id="np-pp-btn">
@@ -412,7 +596,6 @@ nav{display:flex;flex-direction:column;gap:2px}
         <button class="np-cbtn" id="np-next-btn"><svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
       </div>
     </div>
-
   </div>
 </div>
 
@@ -420,13 +603,41 @@ nav{display:flex;flex-direction:column;gap:2px}
 <script>
 const API = 'https://new-youtube-o7cl.onrender.com';
 
+// Update these with curated playlists or your previous queries
 const HOME_SECTIONS = [
-  { id:'trending',  title:'🔥 Trending Right Now',  query:'bollywood trending hits 2024' },
-  { id:'bollywood', title:'🎵 Bollywood Hits',       query:'bollywood superhit songs 2024' },
-  { id:'arijit',   title:'🎤 Arijit Singh',          query:'arijit singh best songs' },
-  { id:'romantic', title:'💕 Romantic Hits',          query:'hindi romantic songs 2024' },
-  { id:'party',    title:'🎉 Party Bangers',          query:'bollywood dance party songs' },
-  { id:'classics', title:'⭐ 90s Nostalgia',          query:'90s bollywood classic songs' },
+  { 
+    id: 'bollywood', 
+    title: '🎵 Bollywood Hot Hits',       
+    type: 'search', 
+    // Using search guarantees a fresh, mixed list of distinct songs
+    value: 'latest bollywood songs 2024 "Provided to YouTube"' 
+  },
+  { 
+    id: 'classics', 
+    title: '📻 All Time Hindi Classics',       
+    type: 'search', 
+    value: 'best 90s hindi romantic songs "Provided to YouTube"' 
+  },
+  { 
+    id: 'tseries', 
+    title: '🔥 Latest from T-Series',          
+    type: 'playlist', 
+    // This is your working T-Series playlist!
+    value: 'UUq-Fj5jknLsUf-MWSy4_brA' 
+  },
+  { 
+    id: 'arijit', 
+    title: '🎤 Arijit Singh Essentials',          
+    type: 'search', 
+    value: 'arijit singh best songs "Provided to YouTube"' 
+  },
+  { 
+    id: 'lofi', 
+    title: '☕ Chill Lofi Beats',          
+    type: 'playlist', 
+    // Lofi Girl Official Uploads
+    value: 'UUSJ4gkVC6NrvII8umztf0Ow' 
+  }
 ];
 
 /* ── DOM refs ── */
@@ -449,8 +660,10 @@ const prevBtn      = document.getElementById('prev-btn');
 const volBar       = document.getElementById('vol-bar');
 const volFill      = document.getElementById('vol-fill');
 const playerBar    = document.getElementById('player-bar');
+const mobProgFill  = document.getElementById('mob-prog-fill');
 const npOverlay    = document.getElementById('np-overlay');
 const npBackdrop   = document.getElementById('np-backdrop');
+const npBgImg      = document.getElementById('np-bg-img'); // New blurred background
 const npCloseBtn   = document.getElementById('np-close-btn');
 const npArtWrap    = document.getElementById('np-art-wrap');
 const npArtCover   = document.getElementById('np-art-cover');
@@ -484,7 +697,7 @@ window.onYouTubeIframeAPIReady = () => {
   ytReady = true;
   ytPlayer = new YT.Player('yt-player-frame', {
     width: '100%', height: '100%',
-    // 👇 CONTROLS ENABLED HERE
+    // Native controls remain ON for video mode override
     playerVars: { autoplay:0, playsinline:1, controls:1, rel:0, modestbranding:1 },
     events: {
       onReady(e){
@@ -504,49 +717,47 @@ window.onYouTubeIframeAPIReady = () => {
   });
 };
 
-/* ── Greeting ── */
-(()=>{
-  const h = new Date().getHours();
-  const el = document.getElementById('home-greeting');
-  if(h>=5&&h<12) el.textContent='Good morning ☀️';
-  else if(h>=12&&h<17) el.textContent='Good afternoon 🌤️';
-  else if(h>=17&&h<21) el.textContent='Good evening 🌙';
-  else el.textContent='Good night 🌙';
-})();
+/* ── UI helpers ── */
+function fmt(s){ s=Math.floor(s||0); return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`; }
 
-/* ── Nav ── */
+function showPlayAll(){
+  playIcon.style.display=''; pauseIcon.style.display='none';
+  npPlayIcon.style.display=''; npPauseIcon.style.display='none';
+  const mobIcon = document.getElementById('mob-pp-btn');
+  if(mobIcon) mobIcon.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+}
+
+function showPauseAll(){
+  playIcon.style.display='none'; pauseIcon.style.display='';
+  npPlayIcon.style.display='none'; npPauseIcon.style.display='';
+  const mobIcon = document.getElementById('mob-pp-btn');
+  if(mobIcon) mobIcon.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+}
+
+function updateTotLabel(){
+  const d = fmt(duration);
+  tTot.textContent = d; npTTot.textContent = d;
+}
+
 function setNav(v){
   ['home','search'].forEach(n=>{
     document.getElementById('nav-'+n).classList.toggle('active',v===n);
     document.getElementById('mob-'+n).classList.toggle('active',v===n);
   });
 }
+
 function showHome(){
   document.getElementById('view-home').style.display='';
   document.getElementById('view-search').style.display='none';
   setNav('home');
   document.getElementById('main').scrollTo({top:0,behavior:'smooth'});
 }
+
 function showSearch(){
   document.getElementById('view-home').style.display='none';
   document.getElementById('view-search').style.display='';
   setNav('search');
   setTimeout(()=>document.getElementById('search-input').focus(),80);
-}
-
-/* ── UI helpers ── */
-function fmt(s){ s=Math.floor(s||0); return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`; }
-function showPlayAll(){
-  playIcon.style.display=''; pauseIcon.style.display='none';
-  npPlayIcon.style.display=''; npPauseIcon.style.display='none';
-}
-function showPauseAll(){
-  playIcon.style.display='none'; pauseIcon.style.display='';
-  npPlayIcon.style.display='none'; npPauseIcon.style.display='';
-}
-function updateTotLabel(){
-  const d = fmt(duration);
-  tTot.textContent = d; npTTot.textContent = d;
 }
 
 /* ── Progress loop ── */
@@ -558,13 +769,14 @@ function startLoop(){
     if(!duration) try{ duration=ytPlayer.getDuration(); updateTotLabel(); }catch(_){}
     const pct = duration > 0 ? (t/duration)*100 : 0;
     progFill.style.width = pct+'%'; npProgFill.style.width = pct+'%';
+    if(mobProgFill) mobProgFill.style.width = pct+'%';
     const f = fmt(t);
     tCur.textContent = f; npTCur.textContent = f;
   }, 500);
 }
 function stopLoop(){ if(progTimer){ clearInterval(progTimer); progTimer=null; } }
 
-/* ── Home sections ── */
+/* ── Home sections & API ── */
 function buildShimmerSection(sec){
   const body = document.getElementById('home-body');
   const block = document.createElement('div');
@@ -572,7 +784,6 @@ function buildShimmerSection(sec){
   block.innerHTML=`
     <div class="sec-head">
       <span class="sec-title">${sec.title}</span>
-      <button class="see-all" onclick="jumpToSearch(${JSON.stringify(sec.query)})">See all</button>
     </div>
     <div class="sec-scroll" id="scr-${sec.id}">
       ${Array(7).fill(0).map(()=>`
@@ -610,26 +821,42 @@ function populateSection(sec,items){
   });
 }
 
-async function loadSection(sec,delay){
-  await new Promise(r=>setTimeout(r,delay));
-  try{
-    const res=await fetch(`${API}/search?q=${encodeURIComponent(sec.query)}`);
-    const data=await res.json();
-    if(data?.length) populateSection(sec,data);
+async function loadSection(sec, delay){
+  await new Promise(r => setTimeout(r, delay));
+  try {
+    let endpoint = '';
+    if (sec.type === 'playlist') {
+      endpoint = `${API}/playlist?id=${sec.value}`;
+    } else {
+      endpoint = `${API}/search?q=${encodeURIComponent(sec.value)}`;
+    }
+    const res = await fetch(endpoint);
+    const data = await res.json();
+    if(data?.length) populateSection(sec, data);
     else document.getElementById(`scr-${sec.id}`).innerHTML='<span style="color:var(--text-muted);font-size:.8rem;padding:.5rem 0;display:block">Nothing found</span>';
-  }catch{
+  } catch {
     document.getElementById(`scr-${sec.id}`).innerHTML='<span style="color:var(--text-muted);font-size:.8rem;padding:.5rem 0;display:block">Couldn\'t load</span>';
   }
 }
 
+/* ── Greeting ── */
+function getGreeting(){
+  const h = new Date().getHours();
+  if(h < 5)  return 'Late Night 🌙';
+  if(h < 12) return 'Good Morning ☀️';
+  if(h < 17) return 'Good Afternoon 🌤️';
+  if(h < 21) return 'Good Evening 🌙';
+  return 'Good Night ✨';
+}
+
 function initHome(){
   document.getElementById('home-body').innerHTML='';
+  const greetEl = document.getElementById('home-greeting');
+  if(greetEl) greetEl.textContent = getGreeting();
   HOME_SECTIONS.forEach((sec,i)=>{ buildShimmerSection(sec); loadSection(sec,i*250); });
 }
 
-function jumpToSearch(q){ showSearch(); document.getElementById('search-input').value=q; search(q); }
-
-/* ── Playback ── */
+/* ── Playback Logic ── */
 function setActive(el){
   if(activeEl) activeEl.classList.remove('playing');
   activeEl=el; if(el) el.classList.add('playing');
@@ -641,35 +868,41 @@ function playFromRow(item,rowEl,idx){
   setActive(rowEl); currentIdx=idx; queueEl=resultsEl; playItem(item);
 }
 
-function playItem(item){
+async function playItem(item) {
+  // 1. INSTANT UI UPDATE
   currentItem = item;
-  const {title,artist} = parseTitleArtist(item.title||'');
-  pThumb.src = item.thumbnail||'';
-  pTitle.textContent = title||item.title;
-  pArtist.textContent = artist;
-  pTitle.style.color = '';
-  npSongTitle.textContent = title||item.title;
-  npSongArtist.textContent = artist;
-  npArtCover.src = item.thumbnail||'';
-  progFill.style.width='0%'; npProgFill.style.width='0%';
-  tCur.textContent='0:00'; npTCur.textContent='0:00';
-  tTot.textContent='0:00'; npTTot.textContent='0:00';
-  duration = 0;
+  const {title, artist} = parseTitleArtist(item.title || '');
 
-  if(ytPlayer && ytReady){
+  pThumb.src = item.thumbnail || '';
+  pTitle.textContent = title || item.title;
+  pArtist.textContent = artist;
+  
+  if(npSongTitle) npSongTitle.textContent = title || item.title;
+  if(npSongArtist) npSongArtist.textContent = artist;
+  if(npArtCover) npArtCover.src = item.thumbnail || '';
+  if(npBgImg) npBgImg.src = item.thumbnail || '';
+
+  // Open the player immediately
+  openNowPlaying();
+  showPauseAll();
+
+  // 2. THE FIX: Bypass your backend's stream fetch
+  // We stop calling ${API}/stream because YouTube is blocking Render's IP.
+  // Instead, we let the YouTube IFrame handle the loading directly.
+  
+  if (ytPlayer && ytReady) {
+    // YouTube's IFrame API is much harder for them to block than your Render script
     ytPlayer.loadVideoById({ videoId: item.videoId });
   } else {
-    const t = setInterval(()=>{
-      if(ytReady && ytPlayer){
+    const t = setInterval(() => {
+      if (ytReady && ytPlayer) {
         clearInterval(t);
         ytPlayer.loadVideoById({ videoId: item.videoId });
       }
     }, 100);
   }
-  openNowPlaying();
-  showPauseAll();
 }
-
+  
 function playNext(){
   if(currentIdx >= tracks.length-1) return;
   currentIdx++;
@@ -685,7 +918,7 @@ function playPrev(){
   playItem(item);
 }
 
-/* ── Video / audio mode ── */
+/* ── Video / audio mode override ── */
 function setVideoMode(on){
   videoMode = on;
   const ytFrame = document.getElementById('yt-player-frame');
@@ -693,37 +926,30 @@ function setVideoMode(on){
   const customFsBtn = document.getElementById('np-fs-btn');
 
   if(on){
-    // 📺 VIDEO MODE: Hand control over to YouTube
     npArtWrap.classList.add('video-mode');
-    vidLabel.textContent='Audio only';
+    vidLabel.textContent='Switch to Audio';
     vidIconVideo.style.display='none'; vidIconAudio.style.display='';
     vidToggleBtn.classList.add('on');
     
-    // Remove the invisible shield so the user can click the YouTube gear, play button, and fullscreen
-    ytFrame.style.pointerEvents = 'auto'; 
-    // Hide your custom play/pause bar and fullscreen button so they don't clash
-    customControls.style.display = 'none'; 
+    ytFrame.style.pointerEvents = 'auto'; // Remove shield
+    customControls.style.display = 'none'; // Hide Apple UI controls
     customFsBtn.style.display = 'none'; 
   } else {
-    // 🎵 AUDIO MODE: Take control back to your custom UI
     npArtWrap.classList.remove('video-mode');
-    vidLabel.textContent='Watch video';
+    vidLabel.textContent='Switch to Video';
     vidIconVideo.style.display=''; vidIconAudio.style.display='none';
     vidToggleBtn.classList.remove('on');
     
-    // Put the invisible shield back up
-    ytFrame.style.pointerEvents = 'none';
-    // Bring back your custom play/pause bar and fullscreen button
-    customControls.style.display = 'block'; 
+    ytFrame.style.pointerEvents = 'none'; // Put shield back
+    customControls.style.display = 'flex'; // Restore Apple UI
     customFsBtn.style.display = 'flex'; 
   }
 }
 
-/* ── Panel open/close ── */
+/* ── UI Panel Controls ── */
 function openNowPlaying(){ panelOpen=true; npOverlay.classList.add('open'); }
 function closeNowPlaying(){ panelOpen=false; npOverlay.classList.remove('open'); }
 
-/* ── Controls ── */
 ppBtn.addEventListener('click',e=>{ e.stopPropagation(); if(!ytPlayer) return; isPlaying?ytPlayer.pauseVideo():ytPlayer.playVideo(); });
 npPpBtn.addEventListener('click',e=>{ e.stopPropagation(); if(!ytPlayer) return; isPlaying?ytPlayer.pauseVideo():ytPlayer.playVideo(); });
 nextBtn.addEventListener('click',e=>{ e.stopPropagation(); playNext(); });
@@ -754,9 +980,19 @@ playerBar.addEventListener('click',e=>{
   if(currentItem) openNowPlaying();
 });
 
+/* ── Swipe up on player bar → open Now Playing ── */
+let swipeTouchStartY = 0;
+playerBar.addEventListener('touchstart', e => {
+  swipeTouchStartY = e.touches[0].clientY;
+}, { passive: true });
+playerBar.addEventListener('touchend', e => {
+  const dy = swipeTouchStartY - e.changedTouches[0].clientY;
+  if(dy > 25 && currentItem) openNowPlaying();
+}, { passive: true });
+
 vidToggleBtn.addEventListener('click',e=>{ e.stopPropagation(); setVideoMode(!videoMode); });
 
-/* ── Fullscreen ── */
+/* ── Fullscreen Toggle ── */
 const npFsBtn = document.getElementById('np-fs-btn');
 let isFullscreen = false;
 
@@ -779,9 +1015,19 @@ document.addEventListener('fullscreenchange',()=>{
   if(!document.fullscreenElement && isFullscreen){ isFullscreen=false; npOverlay.classList.remove('fullscreen'); }
 });
 
-/* ── Close ── */
 npBackdrop.addEventListener('click', closeNowPlaying);
 npCloseBtn.addEventListener('click',()=>{ if(isFullscreen) toggleFullscreen(); else closeNowPlaying(); });
+
+/* ── Swipe down on NP panel → close (mobile) ── */
+let npSwipeStartY = 0;
+const npPanel = document.querySelector('.np-panel');
+npPanel.addEventListener('touchstart', e => {
+  npSwipeStartY = e.touches[0].clientY;
+}, { passive: true });
+npPanel.addEventListener('touchend', e => {
+  const dy = e.changedTouches[0].clientY - npSwipeStartY;
+  if(dy > 60 && !isFullscreen) closeNowPlaying();
+}, { passive: true });
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){
     if(isFullscreen){ isFullscreen=false; npOverlay.classList.remove('fullscreen'); }
@@ -789,7 +1035,7 @@ document.addEventListener('keydown',e=>{
   }
 });
 
-/* ── Search ── */
+/* ── Master Search (Supports Text and Playlist URLs) ── */
 async function search(q, pushState=true){
   if(!q.trim()) return;
   if(pushState){
@@ -800,21 +1046,50 @@ async function search(q, pushState=true){
   showSearch();
   document.getElementById('search-input').value=q;
   resultsEl.innerHTML='';
-  statusEl.innerHTML='<div class="status-icon">⏳</div><div>Searching…</div>';
+  statusEl.innerHTML='<div class="status-icon">⏳</div><div>Loading…</div>';
   statusEl.style.display='flex';
   secHeader.style.display='none';
   tracks=[]; currentIdx=-1; queueEl=resultsEl;
+  
   try{
-    const res=await fetch(`${API}/search?q=${encodeURIComponent(q)}`);
+    let endpoint = '';
+    let displayTitle = '';
+
+    if (q.includes('list=')) {
+      let playlistId = '';
+      try {
+        const parsedUrl = new URL(q);
+        playlistId = parsedUrl.searchParams.get('list');
+      } catch(e) {
+        const match = q.match(/list=([a-zA-Z0-9_-]+)/);
+        if(match) playlistId = match[1];
+      }
+
+      if (playlistId) {
+        endpoint = `${API}/playlist?id=${playlistId}`;
+        displayTitle = `Loaded Playlist`;
+      } else {
+        endpoint = `${API}/search?q=${encodeURIComponent(q)}`;
+        displayTitle = `Results for "${q}"`;
+      }
+    } else {
+      endpoint = `${API}/search?q=${encodeURIComponent(q)}`;
+      displayTitle = `Results for "${q}"`;
+    }
+
+    const res=await fetch(endpoint);
     const data=await res.json();
+    
     statusEl.style.display='none';
     if(!data?.length){
-      statusEl.innerHTML='<div class="status-icon">🎵</div><div>No results. Try something else.</div>';
+      statusEl.innerHTML='<div class="status-icon">🎵</div><div>No results found.</div>';
       statusEl.style.display='flex'; return;
     }
+    
     tracks=data;
     secHeader.style.display='';
-    secTitle.textContent=`Results for "${q}"`;
+    secTitle.textContent = displayTitle;
+    
     data.forEach((item,i)=>{
       const {title,artist}=parseTitleArtist(item.title||'');
       const row=document.createElement('div');
@@ -852,6 +1127,32 @@ window.addEventListener('popstate',e=>{
   if(q) search(q,false);
   else initHome();
 })();
+/* ── 1:00 AM Daily Refresh ── */
+function setupDailyRefresh() {
+  // Check the time every 1 minute so it triggers exactly at 1:00 AM
+  setInterval(() => {
+    const now = new Date();
+    
+    // Check if the current time is 1:00 AM (or later)
+    if (now.getHours() >= 1) {
+      // Get today's date as a string (e.g., "Wed Oct 25 2024")
+      const todayStr = now.toDateString();
+      const lastRefreshDate = localStorage.getItem('last_refresh_date');
+
+      // If we haven't refreshed yet TODAY, do it now!
+      if (lastRefreshDate !== todayStr) {
+        // Save today's date so it doesn't trigger again until tomorrow
+        localStorage.setItem('last_refresh_date', todayStr);
+        
+        // Silently fetch today's new trending songs
+        initHome(); 
+      }
+    }
+  }, 60000); // 60000 ms = 1 minute
+}
+
+// Start the tracker
+setupDailyRefresh();
 </script>
 </body>
 </html>
