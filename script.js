@@ -454,26 +454,32 @@ els.vidToggleBtn.addEventListener('click', e=>{ e.stopPropagation(); setVideoMod
 const npFsBtn = document.getElementById('np-fs-btn');
 let isFullscreen = false;
 
-async function toggleFullscreen(){
+async function toggleFullscreen() {
   isFullscreen = !isFullscreen;
   els.npOverlay.classList.toggle('fullscreen', isFullscreen);
-  try{
-    if(isFullscreen){
-      const p = els.npOverlay.requestFullscreen?.() ?? els.npOverlay.webkitRequestFullscreen?.();
-      if(p?.then){
-        await p.then(()=>{
-          if(videoMode && screen.orientation && screen.orientation.lock){
-            screen.orientation.lock('landscape').catch(()=>{});
-          }
-        }).catch(()=>{});
+
+  try {
+    if (isFullscreen) {
+      if (videoMode) {
+        // In video mode — go fullscreen directly on the YT iframe (1 click!)
+        const ytIframe = document.querySelector('#yt-player-frame iframe');
+        const target = ytIframe || els.npArtWrap;
+        const p = target.requestFullscreen?.() ?? target.webkitRequestFullscreen?.();
+        if (p?.catch) p.catch(() => {});
+        // Lock to landscape for video
+        if (screen.orientation?.lock) {
+          screen.orientation.lock('landscape').catch(() => {});
+        }
+      } else {
+        // In audio mode — fullscreen the whole overlay (album art view)
+        const p = els.npOverlay.requestFullscreen?.() ?? els.npOverlay.webkitRequestFullscreen?.();
+        if (p?.catch) p.catch(() => {});
       }
     } else {
-      if(document.fullscreenElement) await document.exitFullscreen?.();
-      if(screen.orientation && screen.orientation.unlock){
-        screen.orientation.unlock();
-      }
+      if (document.fullscreenElement) await document.exitFullscreen?.();
+      if (screen.orientation?.unlock) screen.orientation.unlock();
     }
-  } catch(e){}
+  } catch (e) {}
 }
 
 if(npFsBtn) npFsBtn.addEventListener('click', e=>{ e.stopPropagation(); toggleFullscreen(); });
@@ -505,9 +511,17 @@ async function search(q, pushState=true){
   showSearch();
   els.searchInput.value=q;
   els.results.innerHTML='';
-  els.status.innerHTML='<div class="status-icon">⏳</div><div>Loading…</div>';
-  els.status.style.display='flex';
-  els.secHeader.style.display='none';
+ els.status.style.display = 'none';
+els.secHeader.style.display = 'none';
+els.results.innerHTML = Array(8).fill(0).map(() => `
+  <div class="skel-row">
+    <div class="skel-thumb"></div>
+    <div class="skel-info">
+      <div class="skel-title"></div>
+      <div class="skel-artist"></div>
+    </div>
+  </div>
+`).join('');
   tracks=[]; currentIdx=-1; queueEl=els.results;
   
   try{
@@ -536,8 +550,16 @@ async function search(q, pushState=true){
       displayTitle = `Results for "${q}"`;
     }
 
-    const res=await fetch(endpoint);
-    const data=await res.json();
+    const cacheKey = 'search_' + q;
+const cached = getCached(cacheKey);
+if (cached && !cached.expired) {
+  // instant from cache
+  var data = cached.data;
+} else {
+  const res = await fetch(endpoint);
+  var data = await res.json();
+  if (data?.length) setCache(cacheKey, data, CACHE_TTL.search);
+}
     
     els.status.style.display='none';
     if(!data?.length){
@@ -573,6 +595,21 @@ async function search(q, pushState=true){
 
 els.searchInput.addEventListener('keydown', e=>{
   if(e.key==='Enter'){ const q = e.target.value.trim(); if(q) search(q); }
+});
+
+// ── Prefetch on keystroke ──
+let debounceTimer;
+els.searchInput.addEventListener('input', e => {
+  const q = e.target.value.trim();
+  clearTimeout(debounceTimer);
+  if (q.length >= 3) {
+    debounceTimer = setTimeout(() => {
+      fetch(`${API}/search?q=${encodeURIComponent(q)}`)
+        .then(r => r.json())
+        .then(data => { if(data?.length) setCache('search_' + q, data, CACHE_TTL.search); })
+        .catch(() => {});
+    }, 400);
+  }
 });
 
 window.addEventListener('popstate', e=>{

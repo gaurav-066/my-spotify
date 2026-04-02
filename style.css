@@ -1221,3 +1221,45 @@ nav {
   .np-song-title { font-size: 1.1rem; }
   .np-song-artist { font-size: 0.9rem; }
 }
+
+/* ── SEARCH SKELETON ── */
+.skel-row {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.skel-thumb {
+  width: 48px;
+  height: 48px;
+  border-radius: 6px;
+  background: var(--surface);
+  animation: pulse 1.5s infinite alternate;
+  flex-shrink: 0;
+}
+
+.skel-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skel-title {
+  height: 13px;
+  border-radius: 6px;
+  background: var(--surface);
+  animation: pulse 1.5s infinite alternate;
+  width: 70%;
+}
+
+.skel-artist {
+  height: 11px;
+  border-radius: 6px;
+  background: var(--surface);
+  animation: pulse 1.5s infinite alternate;
+  animation-delay: 0.2s;
+  width: 45%;
+}
