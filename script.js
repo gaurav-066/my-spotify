@@ -524,73 +524,86 @@ els.results.innerHTML = Array(8).fill(0).map(() => `
 `).join('');
   tracks=[]; currentIdx=-1; queueEl=els.results;
   
-  try{
-    let endpoint = '';
-    let displayTitle = '';
+try {
+  let endpoint = '';
+  let displayTitle = '';
+  let cacheKey = '';
 
-    if (q.includes('list=')) {
-      let playlistId = '';
-      try {
-        const parsedUrl = new URL(q);
-        playlistId = parsedUrl.searchParams.get('list');
-      } catch(e) {
-        const match = q.match(/list=([a-zA-Z0-9_-]+)/);
-        if(match) playlistId = match[1];
-      }
-
-      if (playlistId) {
-        endpoint = `${API}/playlist?id=${playlistId}`;
-        displayTitle = `Loaded Playlist`;
-      } else {
-        endpoint = `${API}/search?q=${encodeURIComponent(q)}`;
-        displayTitle = `Results for "${q}"`;
-      }
+  if (q.includes('list=')) {
+    let playlistId = '';
+    try {
+      const parsedUrl = new URL(q);
+      playlistId = parsedUrl.searchParams.get('list');
+    } catch(e) {
+      const match = q.match(/list=([a-zA-Z0-9_-]+)/);
+      if(match) playlistId = match[1];
+    }
+    if (playlistId) {
+      endpoint = `${API}/playlist?id=${playlistId}`;
+      displayTitle = `Loaded Playlist`;
+      cacheKey = 'pl_' + playlistId;
     } else {
       endpoint = `${API}/search?q=${encodeURIComponent(q)}`;
       displayTitle = `Results for "${q}"`;
+      cacheKey = 'search_' + q;
     }
-
-    const cacheKey = 'search_' + q;
-const cached = getCached(cacheKey);
-if (cached && !cached.expired) {
-  // instant from cache
-  var data = cached.data;
-} else {
-  const res = await fetch(endpoint);
-  var data = await res.json();
-  if (data?.length) setCache(cacheKey, data, CACHE_TTL.search);
-}
-    
-    els.status.style.display='none';
-    if(!data?.length){
-      els.status.innerHTML='<div class="status-icon">🎵</div><div>No results found.</div>';
-      els.status.style.display='flex'; return;
-    }
-    
-    tracks=data;
-    els.secHeader.style.display='';
-    els.secTitle.textContent = displayTitle;
-    
-    data.forEach((item,i)=>{
-      const {title,artist} = parseTitleArtist(item.title||'');
-      const row=document.createElement('div');
-      row.className='trow';
-      row.style.animationDelay=`${i*0.028}s`;
-      row.innerHTML=`
-        <div class="tnum"><span class="n">${i+1}</span><span class="pb">▶</span></div>
-        <img class="tthumb" src="${escapeHTML(item.thumbnail||'')}" onerror="this.style.opacity=0" alt=""/>
-        <div class="tinfo">
-          <div class="ttitle">${escapeHTML(title)}</div>
-          ${artist ? `<div class="tartist">${escapeHTML(artist)}</div>` : ''}
-        </div>
-        <div class="eq"><div class="eqb"></div><div class="eqb"></div><div class="eqb"></div></div>`;
-      row.addEventListener('click', ()=>{ tracks=data; playFromRow(item,row,i); });
-      els.results.appendChild(row);
-    });
-  }catch{
-    els.status.innerHTML='<div class="status-icon">⚠️</div><div>Connection error. Please try again.</div>';
-    els.status.style.display='flex';
+  } else {
+    endpoint = `${API}/search?q=${encodeURIComponent(q)}`;
+    displayTitle = `Results for "${q}"`;
+    cacheKey = 'search_' + q;
   }
+
+  // Check cache first
+  const cached = typeof getCached === 'function' ? getCached(cacheKey) : null;
+  let data = cached?.data || null;
+
+  if (!data) {
+    // No cache — fetch fresh
+    const res = await fetch(endpoint);
+    data = await res.json();
+    if (data?.length) setCache(cacheKey, data, CACHE_TTL.search);
+  } else if (cached.expired) {
+    // Show cached instantly, refresh in background
+    fetch(endpoint).then(r => r.json())
+      .then(fresh => { if(fresh?.length) setCache(cacheKey, fresh, CACHE_TTL.search); })
+      .catch(() => {});
+  }
+
+  els.status.style.display = 'none';
+  if (!data?.length) {
+    els.results.innerHTML = '';
+    els.status.innerHTML = '<div class="status-icon">🎵</div><div>No results found.</div>';
+    els.status.style.display = 'flex';
+    return;
+  }
+
+  tracks = data;
+  els.secHeader.style.display = '';
+  els.secTitle.textContent = displayTitle;
+  els.results.innerHTML = '';
+
+  data.forEach((item, i) => {
+    const {title, artist} = parseTitleArtist(item.title || '');
+    const row = document.createElement('div');
+    row.className = 'trow';
+    row.style.animationDelay = `${i * 0.028}s`;
+    row.innerHTML = `
+      <div class="tnum"><span class="n">${i+1}</span><span class="pb">▶</span></div>
+      <img class="tthumb" src="${escapeHTML(item.thumbnail||'')}" onerror="this.style.opacity=0" alt=""/>
+      <div class="tinfo">
+        <div class="ttitle">${escapeHTML(title)}</div>
+        ${artist ? `<div class="tartist">${escapeHTML(artist)}</div>` : ''}
+      </div>
+      <div class="eq"><div class="eqb"></div><div class="eqb"></div><div class="eqb"></div></div>`;
+    row.addEventListener('click', () => { tracks = data; playFromRow(item, row, i); });
+    els.results.appendChild(row);
+  });
+
+} catch {
+  els.results.innerHTML = '';
+  els.status.innerHTML = '<div class="status-icon">⚠️</div><div>Connection error. Please try again.</div>';
+  els.status.style.display = 'flex';
+}
 }
 
 els.searchInput.addEventListener('keydown', e=>{
