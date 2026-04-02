@@ -9,6 +9,28 @@ const HOME_SECTIONS = [
   { id: 'lofi', title: '☕ Chill Lofi Beats', type: 'playlist', value: 'UUSJ4gkVC6NrvII8umztf0Ow' }
 ];
 
+/* ── Smart Cache ── */
+const CACHE_TTL = {
+  search: 12 * 60 * 60 * 1000,   // 12 hours
+  playlist: 24 * 60 * 60 * 1000  // 24 hours
+};
+
+function getCached(key) {
+  try {
+    const raw = localStorage.getItem('rc_' + key);
+    if (!raw) return null;
+    const { data, ts, ttl } = JSON.parse(raw);
+    // Return data even if expired — we'll refresh in background
+    return { data, expired: Date.now() - ts > ttl };
+  } catch { return null; }
+}
+
+function setCache(key, data, ttl) {
+  try {
+    localStorage.setItem('rc_' + key, JSON.stringify({ data, ts: Date.now(), ttl }));
+  } catch {}
+}
+
 /* ── DOM refs ── */
 const els = {
   results: document.getElementById('results'),
@@ -216,14 +238,50 @@ function populateSection(sec, items){
 
 async function loadSection(sec, delay){
   await new Promise(r => setTimeout(r, delay));
+  const cacheKey = `${sec.type}_${sec.value}`;
+  const ttl = CACHE_TTL[sec.type] || CACHE_TTL.search;
+  const cached = getCached(cacheKey);
+
+  // Show cached data instantly — no shimmer, no wait
+  if (cached) {
+    populateSection(sec, cached.data);
+    // If not expired, we're done
+    if (!cached.expired) return;
+    // If expired, silently fetch fresh data in background
+    try {
+      const endpoint = sec.type === 'playlist'
+        ? `${API}/playlist?id=${sec.value}`
+        : `${API}/search?q=${encodeURIComponent(sec.value)}`;
+      const res = await fetch(endpoint);
+      const data = await res.json();
+      if (data?.length) {
+        setCache(cacheKey, data, ttl);
+        populateSection(sec, data); // silently update UI
+      }
+    } catch {} // fail silently, cached version stays
+    return;
+  }
+
+  // No cache — fetch normally with shimmer already showing
   try {
-    const endpoint = sec.type === 'playlist' ? `${API}/playlist?id=${sec.value}` : `${API}/search?q=${encodeURIComponent(sec.value)}`;
+    const endpoint = sec.type === 'playlist'
+      ? `${API}/playlist?id=${sec.value}`
+      : `${API}/search?q=${encodeURIComponent(sec.value)}`;
     const res = await fetch(endpoint);
     const data = await res.json();
-    if(data?.length) populateSection(sec, data);
-    else document.getElementById(`scr-${sec.id}`).innerHTML='<span style="color:var(--text-muted);font-size:.85rem;padding:.5rem 0;display:block">Nothing found</span>';
+    if (data?.length) {
+      setCache(cacheKey, data, ttl);
+      populateSection(sec, data);
+    } else {
+      document.getElementById(`scr-${sec.id}`).innerHTML =
+        '<span style="color:var(--text-muted);font-size:.85rem;padding:.5rem 0;display:block">Nothing found</span>';
+    }
   } catch {
-    document.getElementById(`scr-${sec.id}`).innerHTML='<span style="color:var(--text-muted);font-size:.85rem;padding:.5rem 0;display:block">Couldn\'t load</span>';
+    // Show cached (even expired) as fallback if fetch fails
+    const fallback = getCached(cacheKey);
+    if (fallback) populateSection(sec, fallback.data);
+    else document.getElementById(`scr-${sec.id}`).innerHTML =
+      '<span style="color:var(--text-muted);font-size:.85rem;padding:.5rem 0;display:block">Couldn\'t load</span>';
   }
 }
 
