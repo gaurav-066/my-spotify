@@ -5,7 +5,7 @@ const HOME_SECTIONS = [
   { id: 'bollywood', title: '🎵 Bollywood Hot Hits', type: 'search', value: 'latest bollywood songs 2024 "Provided to YouTube"' },
   { id: 'classics', title: '📻 All Time Hindi Classics', type: 'search', value: 'best 90s hindi romantic songs "Provided to YouTube"' },
   { id: 'tseries', title: '🔥 Latest from T-Series', type: 'playlist', value: 'UUq-Fj5jknLsUf-MWSy4_brA' },
-  { id: 'arijit', title: '🎤 Arijit Singh Essentials', type: 'search', value: 'arijit singh best songs "Provided to YouTube"' },
+  { id: 'arijit', title: '🎤 International Hits', type: 'search', value: 'international best songs "Provided to YouTube"' },
   { id: 'lofi', title: '☕ Chill Lofi Beats', type: 'playlist', value: 'UUSJ4gkVC6NrvII8umztf0Ow' }
 ];
 
@@ -693,15 +693,20 @@ document.addEventListener('touchstart', e => {
 }, { passive: true });
 
 document.addEventListener('touchmove', e => {
-  // Don't interfere with player bar or now-playing panel swipes
-  if (e.target.closest('#player-bar, .np-panel, .np-overlay')) return;
+  // Don't interfere with now-playing panel swipes (panel handles its own close gesture)
+  if (e.target.closest('.np-panel, .np-overlay')) return;
 
-  const scrollEl = els.main; // your main scrollable div
-  const atTop = scrollEl.scrollTop === 0;
   const pullingDown = e.touches[0].clientY > _pullStartY;
 
+  // Always block pull-to-refresh on the floating player pill
+  if (e.target.closest('#player-bar')) {
+    if (pullingDown) e.preventDefault();
+    return;
+  }
+
+  const scrollEl = els.main;
+  const atTop = scrollEl.scrollTop === 0;
   if (atTop && pullingDown) {
-    e.preventDefault(); // block pull-to-refresh only
+    e.preventDefault(); // block pull-to-refresh on main content only at top
   }
 }, { passive: false });
-

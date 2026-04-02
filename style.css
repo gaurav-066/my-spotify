@@ -667,24 +667,8 @@ nav {
   position: relative;
 }
 
-/* Hide scrub thumb by default, show on hover */
-.prog-fill::after {
-  content: '';
-  position: absolute;
-  right: -5px;
-  top: 50%;
-  transform: translateY(-50%) scale(0);
-  width: 10px;
-  height: 10px;
-  background: #fff;
-  border-radius: 50%;
-  transition: transform 0.15s ease;
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
-}
+/* scrub thumb removed */
 
-.prog-bar:hover .prog-fill::after {
-  transform: translateY(-50%) scale(1);
-}
 
 .p-right {
   width: 30%;
@@ -862,7 +846,7 @@ nav {
   transition: opacity 0.4s ease;
   opacity: 1;
   pointer-events: none;
-  transform: scale(1.35); /* Zoom in to crop out YouTube's baked-in black letterboxing */
+  transform: none;
 }
 
 .np-art-wrap.video-mode {
@@ -989,18 +973,7 @@ nav {
   pointer-events: none;
 }
 
-.np-prog-fill::after {
-  content: '';
-  position: absolute;
-  right: -4px;
-  top: 50%;
-  transform: translateY(-50%) scale(1); /* Always show on mobile iOS */
-  width: 8px;
-  height: 8px;
-  background: #fff;
-  border-radius: 50%;
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
-}
+/* scrub thumb removed */
 
 .np-times {
   display: flex;
