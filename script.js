@@ -139,6 +139,12 @@ function showHome(){
   els.viewSearch.style.display='none';
   setNav('home');
   els.main.scrollTo({top:0, behavior:'smooth'});
+  // Clean the ?q= from URL when going home
+  if(new URL(location.href).searchParams.get('q')){
+    history.pushState({page:'home'}, '', location.pathname);
+  }
+  // If home body is empty (app started on search), load it now
+  if(!els.homeBody.children.length) initHome();
 }
 
 function showSearch(){
@@ -314,7 +320,11 @@ function setVideoMode(on){
 }
 
 /* ── UI Panel Controls ── */
-function openNowPlaying(){ panelOpen=true; els.npOverlay.classList.add('open'); }
+function openNowPlaying(){
+  if(!panelOpen) history.pushState({panel:'nowplaying'}, '');
+  panelOpen=true;
+  els.npOverlay.classList.add('open');
+}
 function closeNowPlaying(){ panelOpen=false; els.npOverlay.classList.remove('open'); }
 
 /* ── Events ── */
@@ -506,6 +516,8 @@ els.searchInput.addEventListener('keydown', e=>{
 });
 
 window.addEventListener('popstate', e=>{
+  // Back button while Now Playing is open → just close the panel
+  if(panelOpen){ closeNowPlaying(); return; }
   const q = e.state?.q || new URL(location.href).searchParams.get('q');
   if(q) search(q, false);
   else { showHome(); history.replaceState(null,'', location.pathname); }
@@ -551,3 +563,23 @@ function updateMediaSession(item) {
   navigator.mediaSession.setActionHandler('nexttrack', () => playNext());
   navigator.mediaSession.setActionHandler('previoustrack', () => playPrev());
 }
+// ── Disable Pull-to-Refresh (only on main scroll, not panels) ──
+let _pullStartY = 0;
+
+document.addEventListener('touchstart', e => {
+  _pullStartY = e.touches[0].clientY;
+}, { passive: true });
+
+document.addEventListener('touchmove', e => {
+  // Don't interfere with player bar or now-playing panel swipes
+  if (e.target.closest('#player-bar, .np-panel, .np-overlay')) return;
+
+  const scrollEl = els.main; // your main scrollable div
+  const atTop = scrollEl.scrollTop === 0;
+  const pullingDown = e.touches[0].clientY > _pullStartY;
+
+  if (atTop && pullingDown) {
+    e.preventDefault(); // block pull-to-refresh only
+  }
+}, { passive: false });
+
