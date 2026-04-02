@@ -276,6 +276,7 @@ nav {
   height: 100%;
   object-fit: cover;
   display: block;
+  transform: scale(1.3); /* crop baked-in YouTube letterbox bars */
 }
 
 /* Play Overlay inside cards */
@@ -667,7 +668,7 @@ nav {
   position: relative;
 }
 
-/* scrub thumb removed */
+/* scrub thumb dots removed */
 
 
 .p-right {
@@ -775,7 +776,7 @@ nav {
   transition: transform 0.6s cubic-bezier(0.32, 0.72, 0, 1);
   height: 90vh;
   max-height: 850px;
-  padding-top: 40px; /* Space for the notch pull down indicator */
+  padding-top: 70px; /* Space for close/fs buttons — button bottom is ~59px, art starts at 70px */
 }
 
 /* Pull down indicator line */
@@ -846,7 +847,7 @@ nav {
   transition: opacity 0.4s ease;
   opacity: 1;
   pointer-events: none;
-  transform: none;
+  transform: scale(1.35); /* Zoom in to crop out YouTube's baked-in black letterboxing */
 }
 
 .np-art-wrap.video-mode {
@@ -973,7 +974,7 @@ nav {
   pointer-events: none;
 }
 
-/* scrub thumb removed */
+/* scrub thumb dot removed */
 
 .np-times {
   display: flex;
