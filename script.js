@@ -606,8 +606,20 @@ try {
 }
 }
 
-els.searchInput.addEventListener('keydown', e=>{
-  if(e.key==='Enter'){ const q = e.target.value.trim(); if(q) search(q); }
+let searchTimer;
+els.searchInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    clearTimeout(searchTimer);
+    const q = e.target.value.trim();
+    if (q) search(q);
+  }
+});
+
+els.searchInput.addEventListener('input', e => {
+  const q = e.target.value.trim();
+  clearTimeout(searchTimer);
+  if (q.length < 3) return; // don't fire for 1-2 chars
+  searchTimer = setTimeout(() => search(q), 500); // fire 500ms after typing stops
 });
 
 // ── Prefetch on keystroke ──
