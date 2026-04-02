@@ -433,18 +433,73 @@ let _sy=0;
 els.playerBar.addEventListener('touchstart',e=>{_sy=e.touches[0].clientY;},{passive:true});
 els.playerBar.addEventListener('touchend',e=>{if(_sy-e.changedTouches[0].clientY>30&&currentItem)openNowPlaying();},{passive:true});
 
-let _nsy=0, _nsx=0;
-document.querySelector('.np-panel').addEventListener('touchstart',e=>{
+/* ── Spotify-style drag-to-close ── */
+let _nsy=0, _nsx=0, _npDragging=false, _npDragStartTime=0;
+const npPanelEl = document.querySelector('.np-panel');
+
+npPanelEl.addEventListener('touchstart', e=>{
   _nsy=e.touches[0].clientY;
   _nsx=e.touches[0].clientX;
+  _npDragging=false;
+  _npDragStartTime=Date.now();
+  // Disable CSS transitions so panel follows finger directly
+  npPanelEl.style.transition='none';
+  els.npOverlay.style.transition='none';
 },{passive:true});
-document.querySelector('.np-panel').addEventListener('touchend',e=>{
-  const dy = e.changedTouches[0].clientY - _nsy;
-  const dx = e.changedTouches[0].clientX - _nsx;
-  if(dy > 60 && Math.abs(dx) < 40 && !isFullscreen && !videoMode){
-    closeNowPlaying();
-  } else if (dy > 120 && Math.abs(dx) < 40 && !isFullscreen && videoMode) {
-    closeNowPlaying();
+
+npPanelEl.addEventListener('touchmove', e=>{
+  if(isFullscreen) return;
+  const dy=e.touches[0].clientY-_nsy;
+  const dx=e.touches[0].clientX-_nsx;
+  // Only track downward drags that are clearly vertical
+  if(dy<=5 || Math.abs(dx)>Math.abs(dy)*1.5) return;
+  _npDragging=true;
+  // Panel follows finger with a slight ease near max drag
+  npPanelEl.style.transform=`translateY(${Math.min(dy, window.innerHeight*0.9)}px)`;
+  // Backdrop fades as you drag down
+  const alpha=Math.max(0, 1-dy/(window.innerHeight*0.55));
+  els.npOverlay.style.opacity=String(alpha);
+},{passive:true});
+
+npPanelEl.addEventListener('touchend', e=>{
+  // Restore CSS transitions
+  if(!_npDragging){
+    npPanelEl.style.transition='';
+    els.npOverlay.style.transition='';
+    return;
+  }
+  _npDragging=false;
+  const dy=e.changedTouches[0].clientY-_nsy;
+  const elapsed=Math.max(1, Date.now()-_npDragStartTime);
+  const velocity=dy/elapsed; // px/ms — quick flick = high velocity
+  const threshold=videoMode?140:80;
+
+  if(dy>threshold || velocity>0.7){
+    // Dismiss — animate out, then close
+    npPanelEl.style.transition='transform 0.38s cubic-bezier(0.32,0.72,0,1)';
+    els.npOverlay.style.transition='opacity 0.38s ease';
+    npPanelEl.style.transform='translateY(100vh)';
+    els.npOverlay.style.opacity='0';
+    setTimeout(()=>{
+      panelOpen=false;
+      els.npOverlay.classList.remove('open');
+      npPanelEl.style.transform='';
+      npPanelEl.style.transition='';
+      els.npOverlay.style.opacity='';
+      els.npOverlay.style.transition='';
+    },400);
+  } else {
+    // Not far/fast enough — snap back
+    npPanelEl.style.transition='transform 0.4s cubic-bezier(0.32,0.72,0,1)';
+    els.npOverlay.style.transition='opacity 0.4s ease';
+    npPanelEl.style.transform='translateY(0)';
+    els.npOverlay.style.opacity='1';
+    setTimeout(()=>{
+      npPanelEl.style.transform='';
+      npPanelEl.style.transition='';
+      els.npOverlay.style.opacity='';
+      els.npOverlay.style.transition='';
+    },420);
   }
 },{passive:true});
 
