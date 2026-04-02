@@ -350,30 +350,32 @@ function playPrev(){
 }
 
 /* ── Video / audio mode override ── */
-function setVideoMode(on){
+function setVideoMode(on) {
   videoMode = on;
   const ytFrame = document.getElementById('yt-player-frame');
   const customControls = document.querySelector('.np-bottom');
   const customFsBtn = document.getElementById('np-fs-btn');
 
-  if(on){
+  if (on) {
+    // VIDEO MODE
     els.npArtWrap.classList.add('video-mode');
-    els.vidLabel.textContent='Switch to Audio';
-    els.vidIconVideo.style.display='none'; els.vidIconAudio.style.display='';
+    els.vidLabel.textContent = 'Switch to Audio';
+    els.vidIconVideo.style.display = 'none';
+    els.vidIconAudio.style.display = '';
     els.vidToggleBtn.classList.add('on');
-    
-    ytFrame.style.pointerEvents = 'auto'; 
-    customControls.style.display = 'none'; 
-    if(customFsBtn) customFsBtn.style.display = 'none'; 
+    ytFrame.style.pointerEvents = 'auto';
+    customControls.style.display = 'none';
+    if (customFsBtn) customFsBtn.style.display = 'flex'; // ✅ show fullscreen in video
   } else {
+    // AUDIO MODE
     els.npArtWrap.classList.remove('video-mode');
-    els.vidLabel.textContent='Switch to Video';
-    els.vidIconVideo.style.display=''; els.vidIconAudio.style.display='none';
+    els.vidLabel.textContent = 'Switch to Video';
+    els.vidIconVideo.style.display = '';
+    els.vidIconAudio.style.display = 'none';
     els.vidToggleBtn.classList.remove('on');
-    
-    ytFrame.style.pointerEvents = 'none'; 
-    customControls.style.display = 'flex'; 
-    if(customFsBtn) customFsBtn.style.display = 'flex'; 
+    ytFrame.style.pointerEvents = 'none';
+    customControls.style.display = 'flex';
+    if (customFsBtn) customFsBtn.style.display = 'none'; // ✅ hide fullscreen in audio
   }
 }
 
