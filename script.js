@@ -1,4 +1,4 @@
-const API = 'https://new-youtube-o7cl.onrender.com';
+const API = 'https://wild-cherry-b868.samtesting67.workers.dev';
 
 // Update these with curated playlists or your previous queries
 const HOME_SECTIONS = [
