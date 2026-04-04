@@ -124,10 +124,14 @@ window.onYouTubeIframeAPIReady = () => {
         const S = YT.PlayerState;
         if(e.data === S.PLAYING){
           isPlaying = true; showPauseAll();
+          if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing';
           try{ duration = ytPlayer.getDuration(); updateTotLabel(); }catch(_){}
           startLoop();
         }
-        if(e.data === S.PAUSED) { isPlaying = false; showPlayAll(); stopLoop(); }
+        if(e.data === S.PAUSED) { 
+          isPlaying = false; showPlayAll(); stopLoop(); 
+          if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'paused';
+        }
         if(e.data === S.ENDED)  { playNext(); }
       }
     }
@@ -185,18 +189,48 @@ function showSearch(){
 }
 
 /* ── Progress loop ── */
+function updateProgressUI(){
+  if(!ytPlayer?.getCurrentTime) return;
+  const t = ytPlayer.getCurrentTime();
+  // Double-check duration if it's still zero
+  if(!duration || duration <= 0) {
+    try { 
+      const d = ytPlayer.getDuration(); 
+      if(d > 0) {
+        duration = d;
+        updateTotLabel(); 
+      }
+    } catch(_){}
+  }
+  
+  const pct = duration > 0 ? (t/duration)*100 : 0;
+  
+  // Update fillers
+  if(els.progFill) els.progFill.style.width = pct+'%'; 
+  if(els.npProgFill) els.npProgFill.style.width = pct+'%';
+  if(els.playerBar) els.playerBar.style.setProperty('--mob-prog', pct+'%');
+  
+  // Update labels
+  const f = fmt(t);
+  if(els.tCur) els.tCur.textContent = f; 
+  if(els.npTCur) els.npTCur.textContent = f;
+
+  // Sync MediaSession position state for better lock screen & OS control sync
+  if ('mediaSession' in navigator && navigator.mediaSession.setPositionState && duration > 0) {
+    try {
+      navigator.mediaSession.setPositionState({
+        duration: duration,
+        playbackRate: 1.0,
+        position: Math.min(t, duration)
+      });
+    } catch(e) {}
+  }
+}
+
 function startLoop(){
   stopLoop();
-  progTimer = setInterval(()=>{
-    if(!ytPlayer?.getCurrentTime) return;
-    const t = ytPlayer.getCurrentTime();
-    if(!duration) try{ duration=ytPlayer.getDuration(); updateTotLabel(); }catch(_){}
-    const pct = duration > 0 ? (t/duration)*100 : 0;
-    els.progFill.style.width = pct+'%'; els.npProgFill.style.width = pct+'%';
-    els.playerBar.style.setProperty('--mob-prog', pct+'%');
-    const f = fmt(t);
-    els.tCur.textContent = f; els.npTCur.textContent = f;
-  }, 500);
+  updateProgressUI(); // Run once immediately
+  progTimer = setInterval(updateProgressUI, 800);
 }
 function stopLoop(){ if(progTimer){ clearInterval(progTimer); progTimer=null; } }
 
@@ -768,10 +802,24 @@ function updateMediaSession(item) {
     artist: artist || 'Raaga',
     artwork: [{ src: hdThumb(item.thumbnail), sizes: '512x512', type: 'image/jpeg' }]
   });
-  navigator.mediaSession.setActionHandler('play', () => ytPlayer?.playVideo());
-  navigator.mediaSession.setActionHandler('pause', () => ytPlayer?.pauseVideo());
+  
+  // Update initial playback state
+  navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused';
+
+  navigator.mediaSession.setActionHandler('play', () => { ytPlayer?.playVideo(); });
+  navigator.mediaSession.setActionHandler('pause', () => { ytPlayer?.pauseVideo(); });
   navigator.mediaSession.setActionHandler('nexttrack', () => playNext());
   navigator.mediaSession.setActionHandler('previoustrack', () => playPrev());
+  
+  // Support seeking from lock screen
+  try {
+    navigator.mediaSession.setActionHandler('seekto', (details) => {
+      if (details.seekTime !== undefined && ytPlayer?.seekTo) {
+        ytPlayer.seekTo(details.seekTime, true);
+        updateProgressUI();
+      }
+    });
+  } catch(e) {}
 }
 // ── Disable Pull-to-Refresh (only on main scroll, not panels) ──
 let _pullStartY = 0;
