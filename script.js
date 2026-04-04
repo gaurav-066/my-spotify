@@ -104,6 +104,14 @@ function escapeHTML(str) {
   });
 }
 
+/* ── Thumbnail quality upgrade ── */
+function hdThumb(url) {
+  if (!url) return '';
+  // Upgrade YouTube thumbnails to high quality
+  // default.jpg (120x90) / mqdefault.jpg (320x180) → hqdefault.jpg (480x360)
+  return url.replace(/\/(default|mqdefault|sddefault)\.(jpg|webp)/, '/hqdefault.$2');
+}
+
 /* ── YT IFrame API ── */
 window.onYouTubeIframeAPIReady = () => {
   ytReady = true;
@@ -226,7 +234,7 @@ function populateSection(sec, items){
     card.className='mcard';
     card.innerHTML=`
       <div class="mcard-art">
-        <img class="mcard-img" src="${escapeHTML(item.thumbnail||'')}" onerror="this.style.opacity=0" alt=""/>
+        <img class="mcard-img" src="${escapeHTML(hdThumb(item.thumbnail))}" onerror="this.style.opacity=0" alt=""/>
         <div class="mcard-overlay"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
       </div>
       <div class="mcard-title">${escapeHTML(title)}</div>
@@ -313,7 +321,7 @@ async function playItem(item) {
   // Reset to audio mode on every new track
   if (videoMode) setVideoMode(false);
 
-  els.pThumb.src = item.thumbnail || '';
+  els.pThumb.src = hdThumb(item.thumbnail);
   els.pTitle.textContent = title || item.title;
   els.pArtist.textContent = artist;
   
@@ -324,11 +332,11 @@ async function playItem(item) {
   if(els.npArtCover) {
     els.npArtCover.style.opacity = '1';
     els.npArtCover.onerror = () => { els.npArtCover.style.opacity = '0'; };
-    els.npArtCover.src = item.thumbnail || '';
+    els.npArtCover.src = hdThumb(item.thumbnail);
   }
   if(els.npBgImg) {
     els.npBgImg.onerror = () => { els.npBgImg.style.opacity = '0'; };
-    els.npBgImg.src = item.thumbnail || '';
+    els.npBgImg.src = hdThumb(item.thumbnail);
   }
 
   // Reset progress
@@ -665,7 +673,7 @@ try {
     row.style.animationDelay = `${i * 0.028}s`;
     row.innerHTML = `
       <div class="tnum"><span class="n">${i+1}</span><span class="pb">▶</span></div>
-      <img class="tthumb" src="${escapeHTML(item.thumbnail||'')}" onerror="this.style.opacity=0" alt=""/>
+      <img class="tthumb" src="${escapeHTML(hdThumb(item.thumbnail||''))}" onerror="this.style.opacity=0" alt=""/>
       <div class="tinfo">
         <div class="ttitle">${escapeHTML(title)}</div>
         ${artist ? `<div class="tartist">${escapeHTML(artist)}</div>` : ''}
@@ -754,7 +762,7 @@ function updateMediaSession(item) {
   navigator.mediaSession.metadata = new MediaMetadata({
     title: title || item.title,
     artist: artist || 'Raaga',
-    artwork: [{ src: item.thumbnail, sizes: '512x512', type: 'image/jpeg' }]
+    artwork: [{ src: hdThumb(item.thumbnail), sizes: '512x512', type: 'image/jpeg' }]
   });
   navigator.mediaSession.setActionHandler('play', () => ytPlayer?.playVideo());
   navigator.mediaSession.setActionHandler('pause', () => ytPlayer?.pauseVideo());
