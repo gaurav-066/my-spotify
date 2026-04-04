@@ -76,10 +76,18 @@ const els = {
   vidIconAudio: document.getElementById('vid-icon-audio'),
   navHome: document.getElementById('nav-home'),
   navSearch: document.getElementById('nav-search'),
+  navLibrary: document.getElementById('nav-library'),
   mobHome: document.getElementById('mob-home'),
   mobSearch: document.getElementById('mob-search'),
+  mobLibrary: document.getElementById('mob-library'),
   viewHome: document.getElementById('view-home'),
   viewSearch: document.getElementById('view-search'),
+  viewLibrary: document.getElementById('view-library'),
+  libStatus: document.getElementById('lib-status'),
+  libResults: document.getElementById('lib-results'),
+  npLikeBtn: document.getElementById('np-like-btn'),
+  iconHeartOutline: document.getElementById('icon-heart-outline'),
+  iconHeartFilled: document.getElementById('icon-heart-filled'),
   homeBody: document.getElementById('home-body'),
   homeGreeting: document.getElementById('home-greeting'),
   main: document.getElementById('main')
@@ -164,13 +172,16 @@ function updateTotLabel(){
 function setNav(v){
   if(els.navHome) els.navHome.classList.toggle('active', v==='home');
   if(els.navSearch) els.navSearch.classList.toggle('active', v==='search');
+  if(els.navLibrary) els.navLibrary.classList.toggle('active', v==='library');
   if(els.mobHome) els.mobHome.classList.toggle('active', v==='home');
   if(els.mobSearch) els.mobSearch.classList.toggle('active', v==='search');
+  if(els.mobLibrary) els.mobLibrary.classList.toggle('active', v==='library');
 }
 
 function showHome(){
   els.viewHome.style.display='';
   els.viewSearch.style.display='none';
+  els.viewLibrary.style.display='none';
   setNav('home');
   els.main.scrollTo({top:0, behavior:'smooth'});
   // Clean the ?q= from URL when going home
@@ -183,9 +194,76 @@ function showHome(){
 
 function showSearch(){
   els.viewHome.style.display='none';
+  els.viewLibrary.style.display='none';
   els.viewSearch.style.display='';
   setNav('search');
   setTimeout(() => els.searchInput.focus(), 80);
+}
+
+function showLibrary(){
+  els.viewHome.style.display='none';
+  els.viewSearch.style.display='none';
+  els.viewLibrary.style.display='block';
+  setNav('library');
+  renderLibrary();
+}
+
+/* ── Library Persistent Storage ── */
+function getLibrary(){
+  try {
+    return JSON.parse(localStorage.getItem('raaga_lib') || '[]');
+  } catch(e) { return []; }
+}
+
+function saveLibrary(list){
+  localStorage.setItem('raaga_lib', JSON.stringify(list));
+}
+
+function toggleLike(){
+  if(!currentItem) return;
+  let lib = getLibrary();
+  const exists = lib.findIndex(t => t.videoId === currentItem.videoId);
+  if(exists > -1){
+    lib.splice(exists, 1);
+  } else {
+    lib.unshift(currentItem);
+  }
+  saveLibrary(lib);
+  updateLikeUI();
+  // If we're on the library view, refresh it
+  if(els.viewLibrary.style.display !== 'none') renderLibrary();
+}
+
+function updateLikeUI(){
+  if(!currentItem) return;
+  const isLiked = getLibrary().some(t => t.videoId === currentItem.videoId);
+  els.iconHeartOutline.style.display = isLiked ? 'none' : 'block';
+  els.iconHeartFilled.style.display = isLiked ? 'block' : 'none';
+}
+
+function renderLibrary(){
+  const lib = getLibrary();
+  els.libResults.innerHTML = '';
+  if(!lib.length){
+    els.libStatus.style.display = 'flex';
+    return;
+  }
+  els.libStatus.style.display = 'none';
+  lib.forEach((item, i) => {
+    const {title, artist} = parseTitleArtist(item.title || '');
+    const row = document.createElement('div');
+    row.className = 'trow';
+    row.innerHTML = `
+      <div class="tnum"><span class="n">${i+1}</span><span class="pb">▶</span></div>
+      <img class="tthumb" src="${escapeHTML(hdThumb(item.thumbnail||''))}" onerror="this.style.opacity=0" alt=""/>
+      <div class="tinfo">
+        <div class="ttitle">${escapeHTML(title)}</div>
+        ${artist ? `<div class="tartist">${escapeHTML(artist)}</div>` : ''}
+      </div>
+      <div class="eq"><div class="eqb"></div><div class="eqb"></div><div class="eqb"></div></div>`;
+    row.addEventListener('click', () => { tracks = lib; playFromRow(item, row, i); });
+    els.libResults.appendChild(row);
+  });
 }
 
 /* ── Progress loop ── */
@@ -384,6 +462,7 @@ async function playItem(item) {
 
   openNowPlaying();
   showPauseAll();
+  updateLikeUI(); // Update heart state for new song
 
   if (ytPlayer && ytReady) {
     ytPlayer.loadVideoById({ videoId: item.videoId });
@@ -458,8 +537,13 @@ function closeNowPlaying(){ panelOpen=false; els.npOverlay.classList.remove('ope
 // Navigation binds
 if(els.navHome) els.navHome.addEventListener('click', showHome);
 if(els.navSearch) els.navSearch.addEventListener('click', showSearch);
+if(els.navLibrary) els.navLibrary.addEventListener('click', showLibrary);
 if(els.mobHome) els.mobHome.addEventListener('click', showHome);
 if(els.mobSearch) els.mobSearch.addEventListener('click', showSearch);
+if(els.mobLibrary) els.mobLibrary.addEventListener('click', showLibrary);
+
+// Library heart button
+if(els.npLikeBtn) els.npLikeBtn.addEventListener('click', e => { e.stopPropagation(); toggleLike(); });
 
 // Player controls bind
 const handlePP = e => { e.stopPropagation(); if(!ytPlayer) return; isPlaying?ytPlayer.pauseVideo():ytPlayer.playVideo(); };

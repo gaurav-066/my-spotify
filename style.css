@@ -920,9 +920,19 @@ nav {
 
 .np-info {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  width: 100%;
   margin-bottom: 30px;
+}
+
+.np-title-col {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0; /* Allow ellipsis to work */
 }
 
 .np-song-title {
@@ -932,7 +942,6 @@ nav {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  width: 100%;
   text-align: left;
 }
 
@@ -944,8 +953,32 @@ nav {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  width: 100%;
   text-align: left;
+}
+
+.np-like-btn {
+  background: transparent !important;
+  box-shadow: none !important;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  opacity: 0.8;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s;
+}
+
+.np-like-btn:active {
+  transform: scale(1.2);
+  opacity: 1;
+}
+
+.np-like-btn svg {
+  width: 28px;
+  height: 28px;
+  fill: #fff;
+}
+
+.np-like-btn #icon-heart-filled {
+  fill: #ff2d55 !important; /* iOS Heart Red */
 }
 
 /* Giant scrub bar */
