@@ -310,14 +310,35 @@ async function playItem(item) {
   updateMediaSession(item);
   const {title, artist} = parseTitleArtist(item.title || '');
 
+  // Reset to audio mode on every new track
+  if (videoMode) setVideoMode(false);
+
   els.pThumb.src = item.thumbnail || '';
   els.pTitle.textContent = title || item.title;
   els.pArtist.textContent = artist;
   
   if(els.npSongTitle) els.npSongTitle.textContent = title || item.title;
   if(els.npSongArtist) els.npSongArtist.textContent = artist;
-  if(els.npArtCover) els.npArtCover.src = item.thumbnail || '';
-  if(els.npBgImg) els.npBgImg.src = item.thumbnail || '';
+
+  // Set album art with graceful error handling
+  if(els.npArtCover) {
+    els.npArtCover.style.opacity = '1';
+    els.npArtCover.onerror = () => { els.npArtCover.style.opacity = '0'; };
+    els.npArtCover.src = item.thumbnail || '';
+  }
+  if(els.npBgImg) {
+    els.npBgImg.onerror = () => { els.npBgImg.style.opacity = '0'; };
+    els.npBgImg.src = item.thumbnail || '';
+  }
+
+  // Reset progress
+  duration = 0;
+  els.progFill.style.width = '0%';
+  els.npProgFill.style.width = '0%';
+  els.tCur.textContent = '0:00';
+  els.tTot.textContent = '0:00';
+  els.npTCur.textContent = '0:00';
+  els.npTTot.textContent = '0:00';
 
   openNowPlaying();
   showPauseAll();
