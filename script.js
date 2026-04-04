@@ -791,3 +791,52 @@ document.addEventListener('touchmove', e => {
     e.preventDefault();
   }
 }, { passive: false });
+
+// ── BACKGROUND PLAYBACK KEEPALIVE ──
+// YouTube's iframe pauses when the screen locks (visibilitychange → hidden).
+// We counter this by immediately resuming and keeping a silent audio context alive.
+
+let _wasPlayingBeforeHidden = false;
+
+// Silent AudioContext keeps the browser audio session active during screen-off
+let _silentCtx = null;
+function ensureSilentAudio() {
+  if (_silentCtx) return;
+  try {
+    _silentCtx = new (window.AudioContext || window.webkitAudioContext)();
+    // Create a silent oscillator to keep the context alive
+    const osc = _silentCtx.createOscillator();
+    const gain = _silentCtx.createGain();
+    gain.gain.value = 0; // completely silent
+    osc.connect(gain);
+    gain.connect(_silentCtx.destination);
+    osc.start();
+  } catch(e) {}
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    // Screen locked / tab hidden — remember if we were playing
+    _wasPlayingBeforeHidden = isPlaying;
+    if (isPlaying) {
+      ensureSilentAudio();
+      // YouTube will pause the video shortly; fight back with repeated resume attempts
+      const resumeAttempts = [100, 300, 600, 1000, 1500];
+      resumeAttempts.forEach(delay => {
+        setTimeout(() => {
+          if (_wasPlayingBeforeHidden && ytPlayer?.getPlayerState) {
+            const state = ytPlayer.getPlayerState();
+            if (state === YT.PlayerState.PAUSED || state === YT.PlayerState.BUFFERING) {
+              ytPlayer.playVideo();
+            }
+          }
+        }, delay);
+      });
+    }
+  } else {
+    // Screen unlocked — resume the silent context if it was suspended
+    if (_silentCtx && _silentCtx.state === 'suspended') {
+      _silentCtx.resume().catch(() => {});
+    }
+  }
+});
