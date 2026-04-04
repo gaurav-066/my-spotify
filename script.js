@@ -394,7 +394,9 @@ function setVideoMode(on) {
     els.vidToggleBtn.classList.add('on');
     ytFrame.style.pointerEvents = 'auto';
     customControls.style.display = 'none';
-    if (customFsBtn) customFsBtn.style.display = 'flex'; // ✅ show fullscreen in video
+    if (customFsBtn) customFsBtn.style.display = 'flex';
+    // Hide cover art so YouTube iframe is visible
+    if (els.npArtCover) els.npArtCover.style.opacity = '0';
   } else {
     // AUDIO MODE
     els.npArtWrap.classList.remove('video-mode');
@@ -404,7 +406,9 @@ function setVideoMode(on) {
     els.vidToggleBtn.classList.remove('on');
     ytFrame.style.pointerEvents = 'none';
     customControls.style.display = 'flex';
-    if (customFsBtn) customFsBtn.style.display = 'none'; // ✅ hide fullscreen in audio
+    if (customFsBtn) customFsBtn.style.display = 'none';
+    // Show cover art again
+    if (els.npArtCover) els.npArtCover.style.opacity = '1';
   }
 }
 
