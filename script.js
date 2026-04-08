@@ -109,6 +109,7 @@ function escapeHTML(str) {
 }
 
 /* ── Search Suggestions ── */
+
 const getSuggestions = async (query) => {
   try {
     const res = await fetch(
@@ -116,22 +117,43 @@ const getSuggestions = async (query) => {
     );
     const data = await res.json();
     return data[1] || [];
-  } catch { return []; }
+  } catch {
+    return [];
+  }
 };
 
 function showSuggestions(suggestions) {
   let box = document.getElementById('suggest-box');
+
   if (!box) {
     box = document.createElement('div');
     box.id = 'suggest-box';
-    els.searchInput.parentNode.appendChild(box);
+
+    // 🔥 safer attach (not parentNode guess)
+    document.body.appendChild(box);
   }
-  if (!suggestions.length) { box.style.display = 'none'; return; }
-  box.innerHTML = suggestions.map(s => `<div class="suggest-item">${escapeHTML(s)}</div>`).join('');
+
+  if (!suggestions.length) {
+    box.style.display = 'none';
+    return;
+  }
+
+  // Position under input (CRITICAL FIX)
+  const rect = els.searchInput.getBoundingClientRect();
+  box.style.position = 'absolute';
+  box.style.top = rect.bottom + window.scrollY + 6 + 'px';
+  box.style.left = rect.left + window.scrollX + 'px';
+  box.style.width = rect.width + 'px';
+
+  box.innerHTML = suggestions
+    .map(s => `<div class="suggest-item">${escapeHTML(s)}</div>`)
+    .join('');
+
   box.style.display = 'block';
+
   box.querySelectorAll('.suggest-item').forEach(item => {
     item.addEventListener('mousedown', e => {
-      e.preventDefault(); // prevent input blur before click fires
+      e.preventDefault();
       els.searchInput.value = item.textContent;
       hideSuggestions();
       search(item.textContent);
