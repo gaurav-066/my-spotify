@@ -387,6 +387,52 @@ nav {
 .search-box input:focus {
   background: #2C2C2E;
 }
+/* ── SEARCH SUGGESTIONS ── */
+#suggest-box {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: #1C1C1E;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  z-index: 999;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+  display: none;
+}
+
+.suggest-item {
+  padding: 12px 20px;
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.suggest-item:last-child {
+  border-bottom: none;
+}
+
+.suggest-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+}
+
+@media (max-width: 640px) {
+  #suggest-box {
+    border-radius: 10px;
+  }
+  .suggest-item {
+    padding: 14px 20px; /* Bigger tap targets on mobile */
+    font-size: 1rem;
+  }
+}
 
 .search-box input::placeholder {
   color: var(--text-muted);
