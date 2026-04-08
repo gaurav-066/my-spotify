@@ -776,9 +776,13 @@ async function search(q, pushState = true) {
   }
 }
 
-/* ── Search Input Events (single, clean block) ── */
-let searchTimer, debounceTimer;
+/* ── Search Input Events (FIXED CLEAN VERSION) ── */
 
+let searchTimer = null;
+let suggestTimer = null;
+let prefetchTimer = null;
+
+// ENTER + ESC
 els.searchInput.addEventListener('keydown', e => {
   if (e.key === 'Enter') {
     clearTimeout(searchTimer);
@@ -786,36 +790,49 @@ els.searchInput.addEventListener('keydown', e => {
     const q = e.target.value.trim();
     if (q) search(q);
   }
+
   if (e.key === 'Escape') hideSuggestions();
 });
 
+// INPUT
 els.searchInput.addEventListener('input', e => {
   const q = e.target.value.trim();
+
   clearTimeout(searchTimer);
-  clearTimeout(debounceTimer);
+  clearTimeout(suggestTimer);
+  clearTimeout(prefetchTimer);
 
-  if (q.length < 3) { hideSuggestions(); return; }
+  if (!q) {
+    hideSuggestions();
+    return;
+  }
 
-  // Show suggestions as user types
-  getSuggestions(q).then(suggestions => showSuggestions(suggestions));
+  // ✅ suggestions (debounced)
+  suggestTimer = setTimeout(() => {
+    getSuggestions(q).then(showSuggestions);
+  }, 200);
 
-  // Prefetch search results in background
-  debounceTimer = setTimeout(() => {
+  // ✅ prefetch (separate timer)
+  prefetchTimer = setTimeout(() => {
     fetch(`${API}/search?q=${encodeURIComponent(q)}`)
       .then(r => r.json())
-      .then(data => { if (data?.length) setCache('search_' + q, data, CACHE_TTL.search); })
+      .then(data => {
+        if (data?.length) setCache('search_' + q, data, CACHE_TTL.search);
+      })
       .catch(() => {});
   }, 400);
 
-  // Auto-search after pause in typing
-  searchTimer = setTimeout(() => { hideSuggestions(); search(q); }, 1200);
+  // ✅ auto search
+  searchTimer = setTimeout(() => {
+    hideSuggestions();
+    search(q);
+  }, 1200);
 });
 
+// BLUR
 els.searchInput.addEventListener('blur', () => {
-  // Small delay so mousedown on suggestion fires first
   setTimeout(hideSuggestions, 150);
 });
-
 /* ── Popstate ── */
 window.addEventListener('popstate', e => {
   if (panelOpen) { closeNowPlaying(); return; }
